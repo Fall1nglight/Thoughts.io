@@ -1,0 +1,22 @@
+# Dependencies
+/packages/
+
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# Rider files
+.idea/
+riderModule.iml
+/_ReSharper.Caches/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+
+# User Secrets
+secrets.json
+
+# Local config files
+appsettings.Development.json
