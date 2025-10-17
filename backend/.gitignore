@@ -10,6 +10,9 @@
 riderModule.iml
 /_ReSharper.Caches/
 
+# Logs
+src/ThoughtsApp.Api/Logs
+
 # Visual Studio files
 .vs/
 *.suo

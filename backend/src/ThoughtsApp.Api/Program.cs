@@ -1,6 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using ThoughtsApp.Api;
+using ThoughtsApp.Api.Data;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -17,6 +19,15 @@ try
 
     var app = builder.Build();
     await app.Configure();
+
+    app.MapGet(
+        "/",
+        async (AppDbContext db) =>
+        {
+            return TypedResults.Ok(await db.Thoughts.Where(t => t.IsPublic).ToListAsync());
+        }
+    );
+
     app.Run();
 }
 catch (Exception ex)
