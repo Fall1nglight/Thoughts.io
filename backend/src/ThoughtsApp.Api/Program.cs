@@ -10,11 +10,14 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
+    Log.Information("Starting application...");
+
     var builder = WebApplication.CreateBuilder(args);
     builder.AddServices();
 
     var app = builder.Build();
-    app.Start();
+    await app.Configure();
+    app.Run();
 }
 catch (Exception ex)
 {
