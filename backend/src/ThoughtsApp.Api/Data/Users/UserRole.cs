@@ -1,4 +1,6 @@
-﻿namespace ThoughtsApp.Api.Data.Types;
+﻿using ThoughtsApp.Api.Data.Shared.Types;
+
+namespace ThoughtsApp.Api.Data.Users;
 
 public class UserRole : IOwnedEntity
 {

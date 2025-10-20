@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ThoughtsApp.Api.Data;
+using ThoughtsApp.Api.Data.Shared;
 
 #nullable disable
 

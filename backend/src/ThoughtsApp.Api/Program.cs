@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using ThoughtsApp.Api;
-using ThoughtsApp.Api.Data;
+using ThoughtsApp.Api.Data.Shared;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)

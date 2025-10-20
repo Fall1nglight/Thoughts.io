@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Serilog;
-using ThoughtsApp.Api.Data;
+using ThoughtsApp.Api.Data.Shared;
 
 namespace ThoughtsApp.Api;
 

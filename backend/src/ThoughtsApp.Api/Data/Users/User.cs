@@ -1,4 +1,7 @@
-﻿namespace ThoughtsApp.Api.Data.Types;
+﻿using ThoughtsApp.Api.Data.Shared.Types;
+using ThoughtsApp.Api.Data.Thoughts;
+
+namespace ThoughtsApp.Api.Data.Users;
 
 public class User : IEntity
 {

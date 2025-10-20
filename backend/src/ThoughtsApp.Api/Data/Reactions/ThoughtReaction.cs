@@ -1,4 +1,8 @@
-﻿namespace ThoughtsApp.Api.Data.Types;
+﻿using ThoughtsApp.Api.Data.Shared.Types;
+using ThoughtsApp.Api.Data.Thoughts;
+using ThoughtsApp.Api.Data.Users;
+
+namespace ThoughtsApp.Api.Data.Reactions;
 
 public class ThoughtReaction : IOwnedEntity
 {

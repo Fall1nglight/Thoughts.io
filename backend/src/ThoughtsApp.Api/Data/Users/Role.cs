@@ -1,4 +1,4 @@
-﻿namespace ThoughtsApp.Api.Data.Types;
+﻿namespace ThoughtsApp.Api.Data.Users;
 
 public class Role
 {
