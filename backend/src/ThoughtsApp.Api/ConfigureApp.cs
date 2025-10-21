@@ -13,7 +13,7 @@ internal static class ConfigureApp
         app.UseSwaggerUI();
         app.UseExceptionHandler();
         app.UseHttpsRedirection();
-        // map endpoints
+        app.MapEndpoints();
         await app.EnsureDatabaseCreated();
     }
 
