@@ -1,6 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using ThoughtsApp.Api.Authentication.Services;
 using ThoughtsApp.Api.Common.ExceptionHandlers;
 using ThoughtsApp.Api.Data.Shared;
 
@@ -20,9 +22,40 @@ internal static class ConfigureServices
         builder.AddDatabase();
         // passwordhasher
         // fluentvalidation
-        // jwtauthentication
+        builder.AddJwtAuthentication();
         // refreshtoken provider
         // fusion cache
+    }
+
+    private static void AddJwtAuthentication(this WebApplicationBuilder builder)
+    {
+        // todo | use IOptions for configuration instead of builder.Configuration[]
+        var optionsName = nameof(JwtProviderOptions);
+        var keyName = nameof(JwtProviderOptions.Key);
+
+        builder
+            .Services.AddAuthentication()
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    IssuerSigningKey = JwtProvider.SecurityKey(
+                        builder.Configuration[string.Concat(optionsName, ":", keyName)]!
+                    ),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero,
+                };
+            });
+
+        builder.Services.AddAuthorization();
+        builder.Services.Configure<JwtProviderOptions>(
+            builder.Configuration.GetSection(optionsName)
+        );
+
+        builder.Services.AddSingleton<JwtProvider>();
     }
 
     /// <summary>
