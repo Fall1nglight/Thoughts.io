@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -20,13 +21,41 @@ internal static class ConfigureServices
         builder.AddJsonHandling();
         builder.AddCors();
         builder.AddDatabase();
-        // passwordhasher
-        // fluentvalidation
+        builder.AddFluentValidation();
         builder.AddJwtAuthentication();
-        // refreshtoken provider
+        builder.AddPasswordHasher();
+        builder.AddRefreshTokenProvider();
         // fusion cache
     }
 
+    private static void AddRefreshTokenProvider(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddSingleton<RefreshTokenProvider>();
+    }
+
+    /// <summary>
+    /// Registers all FluentValidation validators found in the assembly
+    /// containing the <see cref="ConfigureServices"/> class.
+    /// </summary>
+    /// <param name="builder">WebApplicationBuilder</param>
+    private static void AddFluentValidation(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddValidatorsFromAssembly(typeof(ConfigureServices).Assembly);
+    }
+
+    /// <summary>
+    /// Adds password hasher service to the DI container
+    /// </summary>
+    /// <param name="builder">WebApplicationBuilder</param>
+    private static void AddPasswordHasher(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddSingleton<PasswordHasher>();
+    }
+
+    /// <summary>
+    /// Configures JWT Authentication then adds it to the DI container
+    /// </summary>
+    /// <param name="builder">WebApplicationBuilder</param>
     private static void AddJwtAuthentication(this WebApplicationBuilder builder)
     {
         // todo | use IOptions for configuration instead of builder.Configuration[]
@@ -55,7 +84,8 @@ internal static class ConfigureServices
             builder.Configuration.GetSection(optionsName)
         );
 
-        builder.Services.AddSingleton<JwtProvider>();
+        // service lifetime is scoped because we inject AppDbContext which is scoped
+        builder.Services.AddScoped<JwtProvider>();
     }
 
     /// <summary>

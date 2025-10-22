@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using ThoughtsApp.Api.Authentication.Endpoints;
 using ThoughtsApp.Api.Common;
+using ThoughtsApp.Api.Common.Extensions;
+using ThoughtsApp.Api.Common.Filters;
 using ThoughtsApp.Api.Thoughts.Endpoints;
 
 namespace ThoughtsApp.Api;
@@ -28,8 +31,11 @@ public static class Endpoints
     /// <param name="app">WebApplication</param>
     public static void MapEndpoints(this WebApplication app)
     {
-        var endpoints = app.MapGroup("/api/v1").WithOpenApi();
+        var endpoints = app.MapGroup("/api/v1")
+            .AddEndpointFilter<RequestLoggingFilter>()
+            .WithOpenApi();
 
+        endpoints.MapAuthenticationEndpoints();
         endpoints.MapThoughtEndpoints();
     }
 
@@ -40,6 +46,8 @@ public static class Endpoints
     private static void MapAuthenticationEndpoints(this RouteGroupBuilder builder)
     {
         var endpoints = builder.MapPublicGroup("/auth").WithTags("Auth");
+
+        endpoints.MapEndpoint<Signup>();
     }
 
     /// <summary>

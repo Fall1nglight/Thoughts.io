@@ -12,6 +12,7 @@ internal static class ConfigureApp
         app.UseSwagger();
         app.UseSwaggerUI();
         app.UseExceptionHandler();
+        app.UseCors();
         app.UseHttpsRedirection();
         app.MapEndpoints();
         await app.EnsureDatabaseCreated();
