@@ -2,7 +2,6 @@
 using Microsoft.OpenApi.Models;
 using ThoughtsApp.Api.Authentication.Endpoints;
 using ThoughtsApp.Api.Common;
-using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Common.Filters;
 using ThoughtsApp.Api.Thoughts.Endpoints;
 
@@ -45,9 +44,14 @@ public static class Endpoints
     /// <param name="builder">RouteGroupBuilder</param>
     private static void MapAuthenticationEndpoints(this RouteGroupBuilder builder)
     {
+        // todo | add cleanup service to remove unused refresh tokens
+        // to prevent "database bloating"
+
         var endpoints = builder.MapPublicGroup("/auth").WithTags("Auth");
 
         endpoints.MapEndpoint<Signup>();
+        endpoints.MapEndpoint<Login>();
+        endpoints.MapEndpoint<RenewToken>();
     }
 
     /// <summary>
@@ -59,6 +63,8 @@ public static class Endpoints
         var endpoints = builder.MapPublicGroup("/thoughts").WithTags("Thoughts");
 
         endpoints.MapEndpoint<GetPublicThoughts>();
+
+        endpoints.MapAuthorizedGroup().MapEndpoint<GetThoughts>();
     }
 
     /// <summary>
@@ -67,7 +73,10 @@ public static class Endpoints
     /// <param name="builder">RouteGroupBuilder</param>
     /// <param name="prefix">Prefix for the group</param>
     /// <returns></returns>
-    private static RouteGroupBuilder MapPublicGroup(this RouteGroupBuilder builder, string? prefix)
+    private static RouteGroupBuilder MapPublicGroup(
+        this RouteGroupBuilder builder,
+        string? prefix = null
+    )
     {
         return builder.MapGroup(prefix ?? string.Empty).AllowAnonymous();
     }
@@ -79,7 +88,7 @@ public static class Endpoints
     /// <param name="prefix">Prefix for the group</param>
     private static RouteGroupBuilder MapAuthorizedGroup(
         this RouteGroupBuilder builder,
-        string? prefix
+        string? prefix = null
     )
     {
         return builder

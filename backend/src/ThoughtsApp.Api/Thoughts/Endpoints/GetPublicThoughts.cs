@@ -10,7 +10,7 @@ public class GetPublicThoughts : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder builder)
     {
-        builder.MapGet("/", Handle).WithSummary("Gets public thoughts");
+        builder.MapGet("/public", Handle).WithSummary("Gets public thoughts");
     }
 
     public record Response(

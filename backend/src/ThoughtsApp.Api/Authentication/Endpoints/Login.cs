@@ -7,21 +7,20 @@ using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Shared;
 using ThoughtsApp.Api.Data.Tokens;
-using ThoughtsApp.Api.Data.Users;
 
 namespace ThoughtsApp.Api.Authentication.Endpoints;
 
-public class Signup : IEndpoint
+public class Login : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder builder)
     {
         builder
-            .MapPost("/signup", Handle)
-            .WithSummary("Registers a new user")
+            .MapPost("/login", Handle)
+            .WithSummary("Authenticates users")
             .WithRequestValidation<Request>();
     }
 
-    public record Request(string Email, string Username, string Password);
+    public record Request(string Email, string Password);
 
     public record Response(string AccessToken, string RefreshToken);
 
@@ -36,18 +35,6 @@ public class Signup : IEndpoint
                 .WithMessage("Invalid email format.")
                 .MaximumLength(60)
                 .WithMessage("Email address must not exceed {MaxLength} characters.");
-
-            RuleFor(x => x.Username)
-                .NotEmpty()
-                .WithMessage("Username is required.")
-                .MinimumLength(5)
-                .WithMessage("Username must be at least {MinLength} characters long.")
-                .MaximumLength(30)
-                .WithMessage("Username must not exceed {MaxLength} characters.")
-                .Matches("^[a-zA-Z0-9_]*$")
-                .WithMessage(
-                    "Username can only contain letters, numbers, and underscores (no spaces)."
-                );
 
             RuleFor(x => x.Password)
                 .NotEmpty()
@@ -67,7 +54,7 @@ public class Signup : IEndpoint
         }
     }
 
-    private static async Task<Results<Ok<Response>, BadRequest<ProblemDetails>>> Handle(
+    private static async Task<Results<Ok<Response>, UnauthorizedHttpResult>> Handle(
         Request request,
         AppDbContext context,
         PasswordHasher passwordHasher,
@@ -76,40 +63,24 @@ public class Signup : IEndpoint
         CancellationToken cancellationToken
     )
     {
-        var isEmailTaken = await context.Users.AnyAsync(
+        // todo | solve "timing attack"
+        // => if the provided email is INVALID the API responds super fast
+        // => if the provided email is VALID the API verifies the password
+        //  which takes time, so the user can guess if an email address
+        //  exists or not from the response time
+
+        var user = await context.Users.SingleOrDefaultAsync(
             x => x.Email == request.Email,
             cancellationToken
         );
 
-        if (isEmailTaken)
-            return TypedResults.BadRequest(
-                new ProblemDetails
-                {
-                    Detail = "Email address is already taken. Please try another one!",
-                }
-            );
+        if (user == null)
+            return TypedResults.Unauthorized();
 
-        var isUsernameTaken = await context.Users.AnyAsync(
-            x => x.Username == request.Username,
-            cancellationToken
-        );
+        var isPasswordValid = passwordHasher.VerifyPassword(request.Password, user.PasswordHash);
 
-        if (isUsernameTaken)
-            return TypedResults.BadRequest(
-                new ProblemDetails { Detail = "Username is already taken. Please try another one!" }
-            );
-
-        var hashedPassword = passwordHasher.HashPassword(request.Password);
-        var user = new User
-        {
-            Email = request.Email,
-            Username = request.Username,
-            PasswordHash = hashedPassword,
-        };
-
-        await context.Users.AddAsync(user, cancellationToken);
-        var userRole = new UserRole { UserId = user.Id, RoleId = Role.MemberId };
-        await context.UserRoles.AddAsync(userRole, cancellationToken);
+        if (!isPasswordValid)
+            return TypedResults.Unauthorized();
 
         var accessToken = await jwtProvider.GenerateToken(user);
         var refreshToken = new RefreshToken

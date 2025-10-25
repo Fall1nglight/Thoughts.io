@@ -34,9 +34,9 @@ internal sealed class JwtProvider
         var credentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
         // collect all assigned roles to the specific user
-        List<string> roleNames = await _context
+        List<Claim> roles = await _context
             .UserRoles.Where(x => x.UserId == user.Id)
-            .Select(x => x.Role.Name)
+            .Select(x => new Claim(ClaimTypes.Role, x.Role.Name))
             .ToListAsync();
 
         List<Claim> claims =
@@ -46,7 +46,7 @@ internal sealed class JwtProvider
         ];
 
         // map each roleName to Claim, then add it to claims
-        claims.AddRange(roleNames.Select(roleName => new Claim(ClaimTypes.Role, roleName)));
+        claims.AddRange(roles);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {

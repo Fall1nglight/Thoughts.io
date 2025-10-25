@@ -34,7 +34,8 @@ public class RequestValidationFilter<TRequest> : IEndpointFilter
         EndpointFilterDelegate next
     )
     {
-        var requestName = typeof(TRequest).FullName;
+        // replace fixes nested class name
+        var requestName = typeof(TRequest).FullName?.Replace("+", ".");
 
         if (_validator == null)
         {
