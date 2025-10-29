@@ -10,9 +10,9 @@ namespace ThoughtsApp.Api;
 public static class Endpoints
 {
     /// <summary>
-    /// Configures OpenApi security scheme for JWT
+    ///     Configures OpenApi security scheme for JWT
     /// </summary>
-    private static readonly OpenApiSecurityScheme SecurityScheme = new OpenApiSecurityScheme
+    private static readonly OpenApiSecurityScheme SecurityScheme = new()
     {
         Type = SecuritySchemeType.Http,
         Name = JwtBearerDefaults.AuthenticationScheme,
@@ -25,7 +25,7 @@ public static class Endpoints
     };
 
     /// <summary>
-    /// Extension method to map every endpoint
+    ///     Extension method to map every endpoint
     /// </summary>
     /// <param name="app">WebApplication</param>
     public static void MapEndpoints(this WebApplication app)
@@ -39,7 +39,7 @@ public static class Endpoints
     }
 
     /// <summary>
-    /// Maps authentication endpoints
+    ///     Maps authentication endpoints
     /// </summary>
     /// <param name="builder">RouteGroupBuilder</param>
     private static void MapAuthenticationEndpoints(this RouteGroupBuilder builder)
@@ -57,7 +57,7 @@ public static class Endpoints
     }
 
     /// <summary>
-    /// Maps thought endpoints
+    ///     Maps thought endpoints
     /// </summary>
     /// <param name="builder">RouteGroupBuilder</param>
     private static void MapThoughtEndpoints(this RouteGroupBuilder builder)
@@ -76,7 +76,7 @@ public static class Endpoints
     }
 
     /// <summary>
-    /// Extension method to create public route groups
+    ///     Extension method to create public route groups
     /// </summary>
     /// <param name="builder">RouteGroupBuilder</param>
     /// <param name="prefix">Prefix for the group</param>
@@ -90,7 +90,7 @@ public static class Endpoints
     }
 
     /// <summary>
-    /// Extension method to create authorized route groups
+    ///     Extension method to create authorized route groups
     /// </summary>
     /// <param name="builder">RouteGroupBuilder</param>
     /// <param name="prefix">Prefix for the group</param>
@@ -109,10 +109,13 @@ public static class Endpoints
     }
 
     /// <summary>
-    /// Extension method to register the endpoints defined in the specified endpoint class
+    ///     Extension method to register the endpoints defined in the specified endpoint class
     /// </summary>
     /// <param name="routeBuilder">The route builder on which the endpoints will be mapped</param>
-    /// <typeparam name="TEndpoint">The type (class) that implements the IEndpoint interface and contains the route mapping logic</typeparam>
+    /// <typeparam name="TEndpoint">
+    ///     The type (class) that implements the IEndpoint interface and contains the route mapping
+    ///     logic
+    /// </typeparam>
     private static IEndpointRouteBuilder MapEndpoint<TEndpoint>(
         this IEndpointRouteBuilder routeBuilder
     )

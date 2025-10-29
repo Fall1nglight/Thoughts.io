@@ -17,9 +17,10 @@ internal sealed class JwtProviderOptions
 
 internal sealed class JwtProvider
 {
+    private readonly AppDbContext _context;
+
     // fields
     private readonly IOptions<JwtProviderOptions> _options;
-    private readonly AppDbContext _context;
 
     // constructors
     public JwtProvider(IOptions<JwtProviderOptions> options, AppDbContext context)
@@ -42,8 +43,8 @@ internal sealed class JwtProvider
 
         List<Claim> claims =
         [
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Username),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.Username),
         ];
 
         claims.AddRange(roles);
@@ -59,6 +60,8 @@ internal sealed class JwtProvider
         return new JsonWebTokenHandler().CreateToken(tokenDescriptor);
     }
 
-    public static SymmetricSecurityKey SecurityKey(string key) =>
-        new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
+    public static SymmetricSecurityKey SecurityKey(string key)
+    {
+        return new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
+    }
 }

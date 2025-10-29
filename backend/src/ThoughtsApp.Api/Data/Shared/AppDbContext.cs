@@ -8,10 +8,11 @@ namespace ThoughtsApp.Api.Data.Shared;
 
 public class AppDbContext : DbContext
 {
+    private const string DefaultSchema = "thoughtsApp";
+
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options) { }
 
-    private const string DefaultSchema = "thoughtsApp";
     public DbSet<User> Users { get; set; }
     public DbSet<Thought> Thoughts { get; set; }
     public DbSet<Role> Roles { get; set; }

@@ -1,13 +1,11 @@
 ﻿using System.Security.Claims;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThoughtsApp.Api.Authentication.Services;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Shared;
-using ThoughtsApp.Api.Data.Tokens;
 
 namespace ThoughtsApp.Api.Authentication.Endpoints;
 
@@ -16,7 +14,7 @@ public class RenewToken : IEndpoint
     public static void Map(IEndpointRouteBuilder builder)
     {
         builder
-            .MapPost("/renew-token", Handle)
+            .MapPost("/refresh-token", Handle)
             .WithSummary("Provides new access token")
             .WithRequestValidation<Request>();
     }

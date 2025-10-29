@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Data.Shared;
-using ThoughtsApp.Api.Data.Thoughts;
 
 namespace ThoughtsApp.Api.Thoughts.Endpoints;
 
@@ -13,7 +12,6 @@ public class GetPublicThoughts : IEndpoint
         builder.MapGet("/public", Handle).WithSummary("Gets public thoughts");
     }
 
-    // todo | maybe don't expose UserId and User?
     public record Response(
         Guid Id,
         string Username,

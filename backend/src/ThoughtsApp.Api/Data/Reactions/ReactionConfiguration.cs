@@ -13,11 +13,9 @@ public class ReactionConfiguration : IEntityTypeConfiguration<Reaction>
         builder.Property(reaction => reaction.Name).HasMaxLength(15).IsRequired();
 
         builder.HasData(
-            [
-                new Reaction { Id = Reaction.LikeId, Name = Reaction.Like },
-                new Reaction { Id = Reaction.DislikeId, Name = Reaction.Dislike },
-                new Reaction { Id = Reaction.LaughId, Name = Reaction.Laugh },
-            ]
+            new Reaction { Id = Reaction.LikeId, Name = Reaction.Like },
+            new Reaction { Id = Reaction.DislikeId, Name = Reaction.Dislike },
+            new Reaction { Id = Reaction.LaughId, Name = Reaction.Laugh }
         );
     }
 }

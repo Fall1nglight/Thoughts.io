@@ -21,10 +21,10 @@ public class RequestValidationFilter<TRequest> : IEndpointFilter
     // methods
 
     /// <summary>
-    /// Intercepts the incoming request to perform validation on the <typeparamref name="TRequest"/> object.
-    /// If a validator is registered, it validates the request.
-    /// If validation fails, it returns a 400 Bad Request (ValidationProblem).
-    /// If validation succeeds or no validator is found, it proceeds to the next filter in the pipeline.
+    ///     Intercepts the incoming request to perform validation on the <typeparamref name="TRequest" /> object.
+    ///     If a validator is registered, it validates the request.
+    ///     If validation fails, it returns a 400 Bad Request (ValidationProblem).
+    ///     If validation succeeds or no validator is found, it proceeds to the next filter in the pipeline.
     /// </summary>
     /// <param name="context">EndpointFilterInvocationContext</param>
     /// <param name="next">EndpointFilterDelegate</param>

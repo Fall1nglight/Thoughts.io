@@ -13,10 +13,8 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
         builder.Property(role => role.Name).HasMaxLength(50).IsRequired();
 
         builder.HasData(
-            [
-                new Role { Id = Role.AdminId, Name = Role.Admin },
-                new Role { Id = Role.MemberId, Name = Role.Member },
-            ]
+            new Role { Id = Role.AdminId, Name = Role.Admin },
+            new Role { Id = Role.MemberId, Name = Role.Member }
         );
     }
 }

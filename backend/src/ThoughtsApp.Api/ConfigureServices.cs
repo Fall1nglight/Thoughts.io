@@ -34,8 +34,8 @@ internal static class ConfigureServices
     }
 
     /// <summary>
-    /// Registers all FluentValidation validators found in the assembly
-    /// containing the <see cref="ConfigureServices"/> class.
+    ///     Registers all FluentValidation validators found in the assembly
+    ///     containing the <see cref="ConfigureServices" /> class.
     /// </summary>
     /// <param name="builder">WebApplicationBuilder</param>
     private static void AddFluentValidation(this WebApplicationBuilder builder)
@@ -44,7 +44,7 @@ internal static class ConfigureServices
     }
 
     /// <summary>
-    /// Adds password hasher service to the DI container
+    ///     Adds password hasher service to the DI container
     /// </summary>
     /// <param name="builder">WebApplicationBuilder</param>
     private static void AddPasswordHasher(this WebApplicationBuilder builder)
@@ -53,7 +53,7 @@ internal static class ConfigureServices
     }
 
     /// <summary>
-    /// Configures JWT Authentication then adds it to the DI container
+    ///     Configures JWT Authentication then adds it to the DI container
     /// </summary>
     /// <param name="builder">WebApplicationBuilder</param>
     private static void AddJwtAuthentication(this WebApplicationBuilder builder)
@@ -89,7 +89,7 @@ internal static class ConfigureServices
     }
 
     /// <summary>
-    /// Configures Serilog then adds it to the DI container
+    ///     Configures Serilog then adds it to the DI container
     /// </summary>
     private static void AddSerilog(this WebApplicationBuilder builder)
     {
@@ -108,7 +108,7 @@ internal static class ConfigureServices
     }
 
     /// <summary>
-    /// Configures SwaggerAPI, then adds it to the DI container
+    ///     Configures SwaggerAPI, then adds it to the DI container
     /// </summary>
     private static void AddSwagger(this WebApplicationBuilder builder)
     {
@@ -126,7 +126,7 @@ internal static class ConfigureServices
     }
 
     /// <summary>
-    /// Configures JSON handling (disallows unmapped members, then adds it to the DI container
+    ///     Configures JSON handling (disallows unmapped members, then adds it to the DI container
     /// </summary>
     private static void AddJsonHandling(this WebApplicationBuilder builder)
     {
@@ -137,7 +137,7 @@ internal static class ConfigureServices
     }
 
     /// <summary>
-    /// Adds ProblemDetails service to the DI container for consistent error responses
+    ///     Adds ProblemDetails service to the DI container for consistent error responses
     /// </summary>
     private static void AddProblemDetails(this WebApplicationBuilder builder)
     {
@@ -145,7 +145,7 @@ internal static class ConfigureServices
     }
 
     /// <summary>
-    /// Adds CORS to the DI container
+    ///     Adds CORS to the DI container
     /// </summary>
     private static void AddCors(this WebApplicationBuilder builder)
     {
@@ -153,7 +153,7 @@ internal static class ConfigureServices
     }
 
     /// <summary>
-    /// Configures AppDbContext, then adds it to the DI container
+    ///     Configures AppDbContext, then adds it to the DI container
     /// </summary>
     private static void AddDatabase(this WebApplicationBuilder builder)
     {
