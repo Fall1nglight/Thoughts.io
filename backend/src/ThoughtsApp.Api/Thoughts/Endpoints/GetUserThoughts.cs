@@ -7,7 +7,7 @@ using ThoughtsApp.Api.Data.Shared;
 
 namespace ThoughtsApp.Api.Thoughts.Endpoints;
 
-public class GetThoughts : IEndpoint
+public class GetUserThoughts : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder builder)
     {
@@ -16,7 +16,7 @@ public class GetThoughts : IEndpoint
 
     public record Response(
         Guid Id,
-        Guid UserId,
+        string Username,
         string Title,
         string Content,
         bool IsPublic,
@@ -34,7 +34,7 @@ public class GetThoughts : IEndpoint
             .Thoughts.Where(x => x.UserId == claimsPrincipal.GetUserId())
             .Select(x => new Response(
                 x.Id,
-                x.UserId,
+                x.User.Username,
                 x.Title,
                 x.Content,
                 x.IsPublic,

@@ -13,15 +13,15 @@ public class GetPublicThoughts : IEndpoint
         builder.MapGet("/public", Handle).WithSummary("Gets public thoughts");
     }
 
+    // todo | maybe don't expose UserId and User?
     public record Response(
         Guid Id,
-        Guid UserId,
+        string Username,
         string Title,
         string Content,
         bool IsPublic,
         DateTime CreatedAtUtc,
-        DateTime UpdatedAtUtc,
-        User User
+        DateTime UpdatedAtUtc
     );
 
     public record User(Guid Id, string Username);
@@ -32,15 +32,15 @@ public class GetPublicThoughts : IEndpoint
             .Thoughts.Where(t => t.IsPublic)
             .Select(t => new Response(
                 t.Id,
-                t.UserId,
+                t.User.Username,
                 t.Title,
                 t.Content,
                 t.IsPublic,
                 t.CreatedAtUtc,
-                t.UpdatedAtUtc,
-                new User(t.User.Id, t.User.Username)
+                t.UpdatedAtUtc
             ))
             .ToListAsync();
+
         return TypedResults.Ok(publicThoughts);
     }
 }

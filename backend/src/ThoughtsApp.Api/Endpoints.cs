@@ -47,11 +47,13 @@ public static class Endpoints
         // todo | add cleanup service to remove unused refresh tokens
         // to prevent "database bloating"
 
-        var endpoints = builder.MapPublicGroup("/auth").WithTags("Auth");
+        var endpoints = builder.MapGroup("/auth").WithTags("Auth");
 
-        endpoints.MapEndpoint<Signup>();
-        endpoints.MapEndpoint<Login>();
-        endpoints.MapEndpoint<RenewToken>();
+        endpoints
+            .MapPublicGroup()
+            .MapEndpoint<Signup>()
+            .MapEndpoint<Login>()
+            .MapEndpoint<RenewToken>();
     }
 
     /// <summary>
@@ -60,11 +62,17 @@ public static class Endpoints
     /// <param name="builder">RouteGroupBuilder</param>
     private static void MapThoughtEndpoints(this RouteGroupBuilder builder)
     {
-        var endpoints = builder.MapPublicGroup("/thoughts").WithTags("Thoughts");
+        var endpoints = builder.MapGroup("/thoughts").WithTags("Thoughts");
 
-        endpoints.MapEndpoint<GetPublicThoughts>();
+        endpoints.MapPublicGroup().MapEndpoint<GetPublicThoughts>();
 
-        endpoints.MapAuthorizedGroup().MapEndpoint<GetThoughts>();
+        endpoints
+            .MapAuthorizedGroup()
+            .MapEndpoint<GetUserThoughts>()
+            .MapEndpoint<GetThoughtById>()
+            .MapEndpoint<CreateThought>()
+            .MapEndpoint<UpdateThought>()
+            .MapEndpoint<DeleteThought>();
     }
 
     /// <summary>
