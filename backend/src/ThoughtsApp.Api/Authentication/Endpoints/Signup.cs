@@ -69,14 +69,14 @@ public class Signup : IEndpoint
 
     private static async Task<Results<Ok<Response>, BadRequest<ProblemDetails>>> Handle(
         Request request,
-        AppDbContext context,
+        AppDbContext db,
         PasswordHasher passwordHasher,
         JwtProvider jwtProvider,
         RefreshTokenProvider refreshTokenProvider,
         CancellationToken cancellationToken
     )
     {
-        var isEmailTaken = await context.Users.AnyAsync(
+        var isEmailTaken = await db.Users.AnyAsync(
             x => x.Email == request.Email,
             cancellationToken
         );
@@ -89,7 +89,7 @@ public class Signup : IEndpoint
                 }
             );
 
-        var isUsernameTaken = await context.Users.AnyAsync(
+        var isUsernameTaken = await db.Users.AnyAsync(
             x => x.Username == request.Username,
             cancellationToken
         );
@@ -107,9 +107,9 @@ public class Signup : IEndpoint
             PasswordHash = hashedPassword,
         };
 
-        await context.Users.AddAsync(user, cancellationToken);
+        await db.Users.AddAsync(user, cancellationToken);
         var userRole = new UserRole { UserId = user.Id, RoleId = Role.MemberId };
-        await context.UserRoles.AddAsync(userRole, cancellationToken);
+        await db.UserRoles.AddAsync(userRole, cancellationToken);
 
         var accessToken = await jwtProvider.GenerateToken(user);
         var refreshToken = new RefreshToken
@@ -118,8 +118,8 @@ public class Signup : IEndpoint
             Token = refreshTokenProvider.GenerateRefreshToken(),
         };
 
-        await context.RefreshTokens.AddAsync(refreshToken, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
+        await db.RefreshTokens.AddAsync(refreshToken, cancellationToken);
+        await db.SaveChangesAsync(cancellationToken);
         return TypedResults.Ok(new Response(accessToken, refreshToken.Token));
     }
 }

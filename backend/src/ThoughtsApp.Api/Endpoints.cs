@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using ThoughtsApp.Api.Authentication.Endpoints;
+using ThoughtsApp.Api.Comments.Endpoints;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Filters;
+using ThoughtsApp.Api.Reactions.Endpoints;
 using ThoughtsApp.Api.Thoughts.Endpoints;
 
 namespace ThoughtsApp.Api;
@@ -66,6 +68,7 @@ public static class Endpoints
 
         endpoints.MapPublicGroup().MapEndpoint<GetPublicThoughts>();
 
+        // thought endpoints
         endpoints
             .MapAuthorizedGroup()
             .MapEndpoint<GetUserThoughts>()
@@ -73,6 +76,16 @@ public static class Endpoints
             .MapEndpoint<CreateThought>()
             .MapEndpoint<UpdateThought>()
             .MapEndpoint<DeleteThought>();
+
+        // reaction endpoints
+        endpoints.MapAuthorizedGroup().MapEndpoint<UpsertReaction>().MapEndpoint<DeleteReaction>();
+
+        // comment endpoints
+        endpoints
+            .MapAuthorizedGroup()
+            .MapEndpoint<CreateComment>()
+            .MapEndpoint<UpdateComment>()
+            .MapEndpoint<DeleteComment>();
     }
 
     /// <summary>

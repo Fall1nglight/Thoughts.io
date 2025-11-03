@@ -11,7 +11,7 @@ public class GetUserThoughts : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder builder)
     {
-        builder.MapGet("", Handle).WithSummary("Gets user's thoughts");
+        builder.MapGet("/user", Handle).WithSummary("Gets authorized user's thoughts");
     }
 
     public record Response(
@@ -25,12 +25,12 @@ public class GetUserThoughts : IEndpoint
     );
 
     private static async Task<Ok<List<Response>>> Handle(
-        AppDbContext context,
+        AppDbContext db,
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
     {
-        var thoughts = await context
+        var thoughts = await db
             .Thoughts.Where(x => x.UserId == claimsPrincipal.GetUserId())
             .Select(x => new Response(
                 x.Id,

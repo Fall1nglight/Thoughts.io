@@ -41,16 +41,16 @@ public class GetThoughtById : IEndpoint
 
     private static async Task<Results<Ok<Response>, NotFound>> Handle(
         [AsParameters] Request request,
-        AppDbContext context,
+        AppDbContext db,
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
     {
-        var thought = await context
-            .Thoughts.Include(x => x.User)
-            .Where(x =>
+        var thought = await db
+            .Thoughts.Where(x =>
                 x.Id == request.Id && (x.IsPublic || x.UserId == claimsPrincipal.GetUserId())
             )
+            .Include(x => x.User)
             .Select(x => new Response(
                 x.Id,
                 x.User.Username,

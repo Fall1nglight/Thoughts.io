@@ -17,16 +17,15 @@ internal sealed class JwtProviderOptions
 
 internal sealed class JwtProvider
 {
-    private readonly AppDbContext _context;
-
     // fields
+    private readonly AppDbContext _db;
     private readonly IOptions<JwtProviderOptions> _options;
 
     // constructors
-    public JwtProvider(IOptions<JwtProviderOptions> options, AppDbContext context)
+    public JwtProvider(IOptions<JwtProviderOptions> options, AppDbContext db)
     {
         _options = options;
-        _context = context;
+        _db = db;
     }
 
     public async Task<string> GenerateToken(User user)
@@ -36,7 +35,7 @@ internal sealed class JwtProvider
 
         // collect all roles assigned to the specific user
         // then map them to Claims
-        var roles = await _context
+        var roles = await _db
             .UserRoles.Where(x => x.UserId == user.Id)
             .Select(x => new Claim(ClaimTypes.Role, x.Role.Name))
             .ToListAsync();

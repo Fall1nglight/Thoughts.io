@@ -11,4 +11,5 @@ public class Reaction
 
     public required int Id { get; set; }
     public required string Name { get; set; }
+    public List<ThoughtReaction> Reactions { get; set; } = [];
 }

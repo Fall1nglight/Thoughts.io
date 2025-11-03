@@ -49,7 +49,7 @@ public class CreateThought : IEndpoint
 
     private static async Task<Ok<Response>> Handle(
         Request request,
-        AppDbContext context,
+        AppDbContext db,
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
@@ -62,8 +62,8 @@ public class CreateThought : IEndpoint
             IsPublic = request.IsPublic,
         };
 
-        await context.Thoughts.AddAsync(newThought, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
+        await db.Thoughts.AddAsync(newThought, cancellationToken);
+        await db.SaveChangesAsync(cancellationToken);
         return TypedResults.Ok(new Response(newThought.Id));
     }
 }

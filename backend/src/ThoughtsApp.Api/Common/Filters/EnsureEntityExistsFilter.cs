@@ -8,13 +8,13 @@ public class EnsureEntityExists<TEntity, TRequest> : IEndpointFilter
     where TEntity : class, IEntity
 {
     // fields
-    private readonly AppDbContext _context;
+    private readonly AppDbContext _db;
     private readonly Func<TRequest, Guid> _idSelector;
 
     // constructors
-    public EnsureEntityExists(AppDbContext context, Func<TRequest, Guid> idSelector)
+    public EnsureEntityExists(AppDbContext db, Func<TRequest, Guid> idSelector)
     {
-        _context = context;
+        _db = db;
         _idSelector = idSelector;
     }
 
@@ -28,7 +28,7 @@ public class EnsureEntityExists<TEntity, TRequest> : IEndpointFilter
         var cancellationToken = context.HttpContext.RequestAborted;
         var id = _idSelector(request);
 
-        var exists = await _context.Set<TEntity>().AnyAsync(x => x.Id == id, cancellationToken);
+        var exists = await _db.Set<TEntity>().AnyAsync(x => x.Id == id, cancellationToken);
 
         if (!exists)
             return TypedResults.NotFound();

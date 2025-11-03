@@ -9,8 +9,10 @@ public class GetPublicThoughts : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder builder)
     {
-        builder.MapGet("/public", Handle).WithSummary("Gets public thoughts");
+        builder.MapGet("", Handle).WithSummary("Gets public thoughts");
     }
+
+    public record Reaction(int Id, int Count);
 
     public record Response(
         Guid Id,
@@ -18,22 +20,27 @@ public class GetPublicThoughts : IEndpoint
         string Title,
         string Content,
         bool IsPublic,
+        List<Reaction> Reactions,
         DateTime CreatedAtUtc,
         DateTime UpdatedAtUtc
     );
 
     public record User(Guid Id, string Username);
 
-    private static async Task<Ok<List<Response>>> Handle(AppDbContext context)
+    private static async Task<Ok<List<Response>>> Handle(AppDbContext db)
     {
-        var publicThoughts = await context
+        var publicThoughts = await db
             .Thoughts.Where(t => t.IsPublic)
+            .Include(t => t.Reactions)
             .Select(t => new Response(
                 t.Id,
                 t.User.Username,
                 t.Title,
                 t.Content,
                 t.IsPublic,
+                t.Reactions.GroupBy(tr => tr.Reaction.Id)
+                    .Select(group => new Reaction(group.Key, group.Count()))
+                    .ToList(),
                 t.CreatedAtUtc,
                 t.UpdatedAtUtc
             ))

@@ -9,15 +9,15 @@ public class EnsureUserOwnsEntity<TEntity, TRequest> : IEndpointFilter
     where TEntity : class, IEntity, IOwnedEntity
 {
     // fields
-    private readonly AppDbContext _context;
+    private readonly AppDbContext _db;
     private readonly Func<TRequest, Guid> _idSelector;
 
     private record Entity(Guid Id, Guid UserId);
 
     // constructors
-    public EnsureUserOwnsEntity(AppDbContext context, Func<TRequest, Guid> idSelector)
+    public EnsureUserOwnsEntity(AppDbContext db, Func<TRequest, Guid> idSelector)
     {
-        _context = context;
+        _db = db;
         _idSelector = idSelector;
     }
 
@@ -32,8 +32,7 @@ public class EnsureUserOwnsEntity<TEntity, TRequest> : IEndpointFilter
         var id = _idSelector(request);
         var userId = context.HttpContext.User.GetUserId();
 
-        var entity = await _context
-            .Set<TEntity>()
+        var entity = await _db.Set<TEntity>()
             .Where(x => x.Id == id)
             .Select(x => new Entity(x.Id, x.UserId))
             .SingleOrDefaultAsync(cancellationToken);

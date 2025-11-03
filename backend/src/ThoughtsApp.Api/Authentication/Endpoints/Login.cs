@@ -55,7 +55,7 @@ public class Login : IEndpoint
 
     private static async Task<Results<Ok<Response>, UnauthorizedHttpResult>> Handle(
         Request request,
-        AppDbContext context,
+        AppDbContext db,
         PasswordHasher passwordHasher,
         JwtProvider jwtProvider,
         RefreshTokenProvider refreshTokenProvider,
@@ -68,7 +68,7 @@ public class Login : IEndpoint
         //  which takes time, so the user can guess if an email address
         //  exists or not from the response time
 
-        var user = await context.Users.SingleOrDefaultAsync(
+        var user = await db.Users.SingleOrDefaultAsync(
             x => x.Email == request.Email,
             cancellationToken
         );
@@ -88,8 +88,8 @@ public class Login : IEndpoint
             Token = refreshTokenProvider.GenerateRefreshToken(),
         };
 
-        await context.RefreshTokens.AddAsync(refreshToken, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
+        await db.RefreshTokens.AddAsync(refreshToken, cancellationToken);
+        await db.SaveChangesAsync(cancellationToken);
         return TypedResults.Ok(new Response(accessToken, refreshToken.Token));
     }
 }

@@ -16,20 +16,21 @@ public class ThoughtReactionConfiguration : IEntityTypeConfiguration<ThoughtReac
 
         builder.Property(thoughtReaction => thoughtReaction.CreatedAtUtc).IsRequired();
 
+        // todo | remove user's reactions before deleting user
         builder
             .HasOne(thoughtReaction => thoughtReaction.User)
-            .WithMany()
+            .WithMany(x => x.Reactions)
             .HasForeignKey(thoughtReaction => thoughtReaction.UserId)
             .OnDelete(DeleteBehavior.NoAction);
 
         builder
             .HasOne(thoughtReaction => thoughtReaction.Thought)
-            .WithMany()
+            .WithMany(x => x.Reactions)
             .HasForeignKey(thoughtReaction => thoughtReaction.ThoughtId);
 
         builder
             .HasOne(thoughtReaction => thoughtReaction.Reaction)
-            .WithMany()
+            .WithMany(x => x.Reactions)
             .HasForeignKey(thoughtReaction => thoughtReaction.ReactionId);
     }
 }

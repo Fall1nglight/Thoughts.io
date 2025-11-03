@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ThoughtsApp.Api.Data.Shared;
 
@@ -11,9 +12,11 @@ using ThoughtsApp.Api.Data.Shared;
 namespace ThoughtsApp.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251029205344_AddedReactionsToThought")]
+    partial class AddedReactionsToThought
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,38 +25,6 @@ namespace ThoughtsApp.Api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ThoughtsApp.Api.Data.Comments.Comment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ThoughtId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("UpdatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ThoughtId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Comments", "thoughtsApp");
-                });
 
             modelBuilder.Entity("ThoughtsApp.Api.Data.Reactions.Reaction", b =>
                 {
@@ -262,25 +233,6 @@ namespace ThoughtsApp.Api.Migrations
                     b.ToTable("UserRoles", "thoughtsApp");
                 });
 
-            modelBuilder.Entity("ThoughtsApp.Api.Data.Comments.Comment", b =>
-                {
-                    b.HasOne("ThoughtsApp.Api.Data.Thoughts.Thought", "Thought")
-                        .WithMany("Comments")
-                        .HasForeignKey("ThoughtId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ThoughtsApp.Api.Data.Users.User", "User")
-                        .WithMany("Comments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Thought");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ThoughtsApp.Api.Data.Reactions.ThoughtReaction", b =>
                 {
                     b.HasOne("ThoughtsApp.Api.Data.Reactions.Reaction", "Reaction")
@@ -351,15 +303,11 @@ namespace ThoughtsApp.Api.Migrations
 
             modelBuilder.Entity("ThoughtsApp.Api.Data.Thoughts.Thought", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("Reactions");
                 });
 
             modelBuilder.Entity("ThoughtsApp.Api.Data.Users.User", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("Thoughts");
                 });
 #pragma warning restore 612, 618

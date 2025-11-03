@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ThoughtsApp.Api.Data.Comments;
 using ThoughtsApp.Api.Data.Reactions;
 using ThoughtsApp.Api.Data.Thoughts;
 using ThoughtsApp.Api.Data.Tokens;
@@ -15,10 +16,11 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Thought> Thoughts { get; set; }
-    public DbSet<Role> Roles { get; set; }
-    public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<Reaction> Reactions { get; set; }
     public DbSet<ThoughtReaction> ThoughtReactions { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

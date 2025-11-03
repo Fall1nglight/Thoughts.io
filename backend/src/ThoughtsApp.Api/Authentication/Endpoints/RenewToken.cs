@@ -33,14 +33,14 @@ public class RenewToken : IEndpoint
 
     private static async Task<Results<Ok<Response>, BadRequest>> Handle(
         Request request,
-        AppDbContext context,
+        AppDbContext db,
         JwtProvider jwtProvider,
         RefreshTokenProvider refreshTokenProvider,
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
     {
-        var refreshToken = await context
+        var refreshToken = await db
             .RefreshTokens.Include(x => x.User)
             .SingleOrDefaultAsync(x => x.Token == request.Token, cancellationToken);
 
@@ -52,7 +52,7 @@ public class RenewToken : IEndpoint
         // to prevent xss attacks
         if (refreshToken.ExpiresOnUtc < DateTime.Now)
         {
-            await context
+            await db
                 .RefreshTokens.Where(x => x.UserId == refreshToken.UserId)
                 .ExecuteDeleteAsync(cancellationToken);
 
@@ -63,7 +63,7 @@ public class RenewToken : IEndpoint
         refreshToken.Token = refreshTokenProvider.GenerateRefreshToken();
         refreshToken.ExpiresOnUtc = DateTime.Now.AddDays(1);
 
-        await context.SaveChangesAsync(cancellationToken);
+        await db.SaveChangesAsync(cancellationToken);
         return TypedResults.Ok(new Response(accessToken, refreshToken.Token));
     }
 }
