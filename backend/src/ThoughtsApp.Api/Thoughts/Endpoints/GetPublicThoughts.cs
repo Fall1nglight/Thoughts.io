@@ -27,11 +27,13 @@ public class GetPublicThoughts : IEndpoint
 
     public record User(Guid Id, string Username);
 
-    private static async Task<Ok<List<Response>>> Handle(AppDbContext db)
+    private static async Task<Ok<List<Response>>> Handle(
+        AppDbContext db,
+        CancellationToken cancellationToken
+    )
     {
         var publicThoughts = await db
             .Thoughts.Where(t => t.IsPublic)
-            .Include(t => t.Reactions)
             .Select(t => new Response(
                 t.Id,
                 t.User.Username,
@@ -44,7 +46,7 @@ public class GetPublicThoughts : IEndpoint
                 t.CreatedAtUtc,
                 t.UpdatedAtUtc
             ))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return TypedResults.Ok(publicThoughts);
     }

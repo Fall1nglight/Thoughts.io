@@ -32,8 +32,10 @@ public class UpsertReaction : IEndpoint
     {
         public RequestValidator()
         {
-            RuleFor(x => x.ThoughtId).NotEmpty().WithMessage("ThoughtId is required.");
-            RuleFor(x => x.Body.ReactionId).GreaterThanOrEqualTo(1).LessThanOrEqualTo(3);
+            RuleFor(x => x.ThoughtId).NotEmpty().WithMessage("{PropertyName} is required.");
+            RuleFor(x => x.Body.ReactionId)
+                .InclusiveBetween(1, 3)
+                .WithMessage("{PropertyName} must be between {From} and {To}.");
         }
     }
 
@@ -47,6 +49,7 @@ public class UpsertReaction : IEndpoint
         var userId = claimsPrincipal.GetUserId();
 
         // todo | move this to filter
+        // todo | if user owns reaction he can perform actions on it
         var isThoughtPublic = await db
             .Thoughts.Where(x => x.Id == request.ThoughtId)
             .Select(x => x.IsPublic)

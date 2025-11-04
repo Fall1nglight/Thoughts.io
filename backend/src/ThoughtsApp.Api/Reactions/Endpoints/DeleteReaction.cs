@@ -15,7 +15,7 @@ public class DeleteReaction : IEndpoint
     public static void Map(IEndpointRouteBuilder builder)
     {
         builder
-            .MapDelete("/{thoughtId}/reactions", Handle)
+            .MapDelete("/{thoughtId}/reactions/user", Handle)
             .WithSummary("Deletes authorized user's reaction of a thought by id")
             .WithRequestValidation<Request>()
             .WithEnsureEntityExistsFilter<Thought, Request>(x => x.ThoughtId);
@@ -27,7 +27,7 @@ public class DeleteReaction : IEndpoint
     {
         public RequestValidator()
         {
-            RuleFor(x => x.ThoughtId).NotEmpty().WithMessage("ThoughtId is required.");
+            RuleFor(x => x.ThoughtId).NotEmpty().WithMessage("{PropertyName} is required.");
         }
     }
 

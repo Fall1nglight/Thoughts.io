@@ -31,15 +31,15 @@ public class UpdateComment : IEndpoint
     {
         public RequestValidator()
         {
-            RuleFor(x => x.ThoughtId).NotEmpty().WithMessage("ThoughtId is required.");
-            RuleFor(x => x.CommentId).NotEmpty().WithMessage("CommentId is required.");
+            RuleFor(x => x.ThoughtId).NotEmpty().WithMessage("{PropertyName} is required.");
+            RuleFor(x => x.CommentId).NotEmpty().WithMessage("{PropertyName} is required.");
             RuleFor(x => x.Body.Content)
                 .NotEmpty()
-                .WithMessage("Content is required.")
+                .WithMessage("{PropertyName} is required.")
                 .MinimumLength(5)
-                .WithMessage("Content must be at least {MinLength} characters long.")
+                .WithMessage("{PropertyName} must be at least {MinLength} characters long.")
                 .MaximumLength(150)
-                .WithMessage("Content must not exceed {MaxLength} characters.");
+                .WithMessage("{PropertyName} must not exceed {MaxLength} characters.");
         }
     }
 

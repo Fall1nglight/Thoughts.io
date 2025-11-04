@@ -29,8 +29,8 @@ public class DeleteComment : IEndpoint
     {
         public RequestValidator()
         {
-            RuleFor(x => x.ThoughtId).NotEmpty().WithMessage("ThoughtId is required.");
-            RuleFor(x => x.CommentId).NotEmpty().WithMessage("CommentId is required.");
+            RuleFor(x => x.ThoughtId).NotEmpty().WithMessage("{PropertyName} is required.");
+            RuleFor(x => x.CommentId).NotEmpty().WithMessage("{PropertyName} is required.");
         }
     }
 
@@ -42,7 +42,7 @@ public class DeleteComment : IEndpoint
     )
     {
         await db
-            .Comments.Where(x => x.ThoughtId == request.ThoughtId)
+            .Comments.Where(x => x.ThoughtId == request.ThoughtId && x.Id == request.CommentId)
             .ExecuteDeleteAsync(cancellationToken);
 
         return TypedResults.Ok();

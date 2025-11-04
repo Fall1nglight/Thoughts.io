@@ -78,11 +78,17 @@ public static class Endpoints
             .MapEndpoint<DeleteThought>();
 
         // reaction endpoints
-        endpoints.MapAuthorizedGroup().MapEndpoint<UpsertReaction>().MapEndpoint<DeleteReaction>();
+        endpoints
+            .MapAuthorizedGroup()
+            .MapEndpoint<GetReactions>()
+            .MapEndpoint<GetReactionsById>()
+            .MapEndpoint<UpsertReaction>()
+            .MapEndpoint<DeleteReaction>();
 
         // comment endpoints
         endpoints
             .MapAuthorizedGroup()
+            .MapEndpoint<GetComments>()
             .MapEndpoint<CreateComment>()
             .MapEndpoint<UpdateComment>()
             .MapEndpoint<DeleteComment>();

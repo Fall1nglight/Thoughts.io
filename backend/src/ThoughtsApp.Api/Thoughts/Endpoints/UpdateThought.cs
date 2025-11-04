@@ -29,25 +29,25 @@ public class UpdateThought : IEndpoint
     {
         public RequestValidator()
         {
-            RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required.");
+            RuleFor(x => x.Id).NotEmpty().WithMessage("{PropertyName} is required.");
 
             RuleFor(x => x.Body.Title)
                 .NotEmpty()
-                .WithMessage("Title is required.")
+                .WithMessage("{PropertyName} is required.")
                 .MinimumLength(5)
-                .WithMessage("Title must be at least {MinLength} characters long.")
+                .WithMessage("{PropertyName} must be at least {MinLength} characters long.")
                 .MaximumLength(500)
-                .WithMessage("Title must not exceed {MaxLength} characters.");
+                .WithMessage("{PropertyName} must not exceed {MaxLength} characters.");
 
             RuleFor(x => x.Body.Content)
                 .NotEmpty()
-                .WithMessage("Content is required.")
+                .WithMessage("{PropertyName} is required.")
                 .MinimumLength(5)
-                .WithMessage("Content must be at least {MinLength} characters long.")
+                .WithMessage("{PropertyName} must be at least {MinLength} characters long.")
                 .MaximumLength(500)
-                .WithMessage("Content must not exceed {MaxLength} characters.");
+                .WithMessage("{PropertyName} must not exceed {MaxLength} characters.");
 
-            RuleFor(x => x.Body.IsPublic).NotNull().WithMessage("IsPublic is required.");
+            RuleFor(x => x.Body.IsPublic).NotNull().WithMessage("{PropertyName} is required.");
         }
     }
 

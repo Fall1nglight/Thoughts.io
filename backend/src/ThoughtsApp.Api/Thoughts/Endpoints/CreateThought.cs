@@ -29,21 +29,21 @@ public class CreateThought : IEndpoint
         {
             RuleFor(x => x.Title)
                 .NotEmpty()
-                .WithMessage("Title is required.")
+                .WithMessage("{PropertyName} is required.")
                 .MinimumLength(5)
-                .WithMessage("Title must be at least {MinLength} characters long.")
+                .WithMessage("{PropertyName} must be at least {MinLength} characters long.")
                 .MaximumLength(500)
-                .WithMessage("Title must not exceed {MaxLength} characters.");
+                .WithMessage("{PropertyName} must not exceed {MaxLength} characters.");
 
             RuleFor(x => x.Content)
                 .NotEmpty()
-                .WithMessage("Content is required.")
+                .WithMessage("{PropertyName} is required.")
                 .MinimumLength(5)
-                .WithMessage("Content must be at least {MinLength} characters long.")
+                .WithMessage("{PropertyName} must be at least {MinLength} characters long.")
                 .MaximumLength(500)
-                .WithMessage("Content must not exceed {MaxLength} characters.");
+                .WithMessage("{PropertyName} must not exceed {MaxLength} characters.");
 
-            RuleFor(x => x.IsPublic).NotNull().WithMessage("IsPublic is required.");
+            RuleFor(x => x.IsPublic).NotNull().WithMessage("{PropertyName} is required.");
         }
     }
 
