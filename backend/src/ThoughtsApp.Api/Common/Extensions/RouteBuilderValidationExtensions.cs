@@ -59,4 +59,29 @@ public static class RouteBuilderValidationExtensions
             )
             .Produces<NotFound>();
     }
+
+    public static RouteHandlerBuilder WithEnsureEntityIsAccessible<TEntity, TRequest>(
+        this RouteHandlerBuilder builder,
+        Func<TRequest, Guid> idSelector
+    )
+        where TEntity : class, IEntity, IOwnedEntity, IAccessibleEntity
+    {
+        return builder
+            .AddEndpointFilterFactory(
+                (context, next) =>
+                    async invocationContext =>
+                    {
+                        var db =
+                            invocationContext.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+
+                        var filter = new EnsureEntityIsAccessible<TEntity, TRequest>(
+                            db,
+                            idSelector
+                        );
+
+                        return await filter.InvokeAsync(invocationContext, next);
+                    }
+            )
+            .Produces<NotFound>();
+    }
 }

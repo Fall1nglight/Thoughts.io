@@ -7,6 +7,9 @@ public class Role
     public const int AdminId = 1;
     public const int MemberId = 2;
 
+    // ids
     public required int Id { get; set; }
+
+    // other properties
     public required string Name { get; set; }
 }

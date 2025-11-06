@@ -7,13 +7,18 @@ namespace ThoughtsApp.Api.Data.Users;
 
 public class User : IEntity
 {
+    // ids
+    public Guid Id { get; init; }
+
+    // other properties
     public required string Username { get; set; }
     public required string Email { get; set; }
     public required string PasswordHash { get; set; }
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAtUtc { get; set; } = DateTime.MinValue;
+
+    // navigation properties
     public List<Thought> Thoughts { get; set; } = [];
     public List<ThoughtReaction> Reactions { get; set; } = [];
     public List<Comment> Comments { get; set; } = [];
-    public Guid Id { get; init; }
 }

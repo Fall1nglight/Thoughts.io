@@ -51,16 +51,13 @@ public class UpdateThought : IEndpoint
         }
     }
 
-    private static async Task<Ok> Handle(
+    private static async Task<NoContent> Handle(
         [AsParameters] Request request,
         AppDbContext db,
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
     {
-        // SingleAsync over SingleOrDefaultAsync
-        // => because the "WithEnsureEntityOwned" filter ensures that the entity exists
-        // and owned by the user
         var thought = await db.Thoughts.SingleAsync(x => x.Id == request.Id, cancellationToken);
 
         thought.Title = request.Body.Title.Trim();
@@ -69,6 +66,6 @@ public class UpdateThought : IEndpoint
         thought.UpdatedAtUtc = DateTime.UtcNow;
 
         await db.SaveChangesAsync(cancellationToken);
-        return TypedResults.Ok();
+        return TypedResults.NoContent();
     }
 }

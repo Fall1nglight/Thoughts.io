@@ -6,6 +6,7 @@ using ThoughtsApp.Api.Authentication;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Shared;
+using ThoughtsApp.Api.Data.Thoughts;
 
 namespace ThoughtsApp.Api.Reactions.Endpoints;
 
@@ -16,7 +17,8 @@ public class GetReactions : IEndpoint
         builder
             .MapGet("/{thoughtId}/reactions", Handle)
             .WithSummary("Gets all reactions by thoughtId")
-            .WithRequestValidation<Request>();
+            .WithRequestValidation<Request>()
+            .WithEnsureEntityIsAccessible<Thought, Request>(x => x.ThoughtId);
     }
 
     public record Request(Guid ThoughtId);
@@ -40,19 +42,6 @@ public class GetReactions : IEndpoint
         CancellationToken cancellationToken
     )
     {
-        var thought = await db
-            .Thoughts.Where(x => x.Id == request.ThoughtId)
-            .Select(x => new { x.IsPublic, x.UserId })
-            .SingleOrDefaultAsync(cancellationToken);
-
-        if (thought == null)
-            return TypedResults.NotFound();
-
-        var userId = claimsPrincipal.GetUserId();
-
-        if (!thought.IsPublic && thought.UserId != userId)
-            return TypedResults.NotFound();
-
         var reactions = await db
             .ThoughtReactions.Where(x => x.ThoughtId == request.ThoughtId)
             .GroupBy(tr => tr.ReactionId)

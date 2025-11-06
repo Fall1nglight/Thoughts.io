@@ -20,7 +20,7 @@ public class UpsertReaction : IEndpoint
             .MapPut("/{thoughtId}/reactions", Handle)
             .WithSummary("Creates/updates reaction of the given thought by id")
             .WithRequestValidation<Request>()
-            .WithEnsureEntityExistsFilter<Thought, Request>(x => x.ThoughtId);
+            .WithEnsureEntityIsAccessible<Thought, Request>(x => x.ThoughtId);
     }
 
     public record Body(int ReactionId);
@@ -47,16 +47,6 @@ public class UpsertReaction : IEndpoint
     )
     {
         var userId = claimsPrincipal.GetUserId();
-
-        // todo | move this to filter
-        // todo | if user owns reaction he can perform actions on it
-        var isThoughtPublic = await db
-            .Thoughts.Where(x => x.Id == request.ThoughtId)
-            .Select(x => x.IsPublic)
-            .SingleAsync(cancellationToken);
-
-        if (!isThoughtPublic)
-            return TypedResults.NotFound();
 
         var reaction = await db.ThoughtReactions.SingleOrDefaultAsync(
             tr => tr.ThoughtId == request.ThoughtId && tr.UserId == userId,

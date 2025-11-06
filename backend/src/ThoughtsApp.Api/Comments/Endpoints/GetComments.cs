@@ -6,6 +6,7 @@ using ThoughtsApp.Api.Authentication;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Shared;
+using ThoughtsApp.Api.Data.Thoughts;
 
 namespace ThoughtsApp.Api.Comments.Endpoints;
 
@@ -16,7 +17,8 @@ public class GetComments : IEndpoint
         builder
             .MapGet("{thoughtId}/comments", Handle)
             .WithSummary("Gets all comments related to the given thought.")
-            .WithRequestValidation<Request>();
+            .WithRequestValidation<Request>()
+            .WithEnsureEntityIsAccessible<Thought, Request>(x => x.ThoughtId);
     }
 
     public record Request(Guid ThoughtId);
@@ -48,17 +50,6 @@ public class GetComments : IEndpoint
         CancellationToken cancellationToken
     )
     {
-        var thought = await db
-            .Thoughts.Where(x => x.Id == request.ThoughtId)
-            .Select(x => new { x.IsPublic, x.UserId })
-            .SingleOrDefaultAsync(cancellationToken);
-
-        if (thought == null)
-            return TypedResults.NotFound();
-
-        if (!thought.IsPublic && thought.UserId != claimsPrincipal.GetUserId())
-            return TypedResults.NotFound();
-
         var comments = await db
             .Comments.Where(x => x.ThoughtId == request.ThoughtId)
             .Select(x => new Comment(

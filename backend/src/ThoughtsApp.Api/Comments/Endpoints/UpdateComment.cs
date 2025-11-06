@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ThoughtsApp.Api.Authentication;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Comments;
@@ -19,8 +20,7 @@ public class UpdateComment : IEndpoint
             .MapPut("/{thoughtId}/comments/{commentId}", Handle)
             .WithSummary("Updates a comment")
             .WithRequestValidation<Request>()
-            .WithEnsureEntityExistsFilter<Thought, Request>(x => x.ThoughtId)
-            .WithEnsureUserOwnsEntity<Comment, Request>(x => x.CommentId);
+            .WithEnsureEntityIsAccessible<Thought, Request>(x => x.ThoughtId);
     }
 
     public record Body(string Content);
@@ -43,17 +43,23 @@ public class UpdateComment : IEndpoint
         }
     }
 
-    private static async Task<Ok> Handle(
+    private static async Task<Results<Ok, NotFound>> Handle(
         [AsParameters] Request request,
         AppDbContext db,
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
     {
-        var comment = await db.Comments.SingleAsync(
-            x => x.Id == request.CommentId,
+        var comment = await db.Comments.SingleOrDefaultAsync(
+            x =>
+                x.Id == request.CommentId
+                && x.ThoughtId == request.ThoughtId
+                && x.UserId == claimsPrincipal.GetUserId(),
             cancellationToken
         );
+
+        if (comment == null)
+            return TypedResults.NotFound();
 
         comment.Content = request.Body.Content.Trim();
         comment.UpdatedAtUtc = DateTime.UtcNow;

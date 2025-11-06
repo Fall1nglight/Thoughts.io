@@ -30,20 +30,14 @@ public class DeleteThought : IEndpoint
         }
     }
 
-    private static async Task<Results<Ok, NotFound>> Handle(
+    private static async Task<NoContent> Handle(
         [AsParameters] Request request,
         AppDbContext db,
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
     {
-        var rowsDeleted = await db
-            .Thoughts.Where(x => x.Id == request.Id)
-            .ExecuteDeleteAsync(cancellationToken);
-
-        if (rowsDeleted == 0)
-            return TypedResults.NotFound();
-
-        return TypedResults.Ok();
+        await db.Thoughts.Where(x => x.Id == request.Id).ExecuteDeleteAsync(cancellationToken);
+        return TypedResults.NoContent();
     }
 }

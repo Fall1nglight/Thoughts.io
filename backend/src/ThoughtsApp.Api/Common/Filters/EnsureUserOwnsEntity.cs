@@ -37,7 +37,7 @@ public class EnsureUserOwnsEntity<TEntity, TRequest> : IEndpointFilter
             .Select(x => new Entity(x.Id, x.UserId))
             .SingleOrDefaultAsync(cancellationToken);
 
-        // return HTTP 404 Notfound to prevent leaking sensitive information about user entities
+        // return HTTP 404 NotFound to prevent leaking sensitive information about user entities
         if (entity == null || entity.UserId != userId)
             return TypedResults.NotFound();
 

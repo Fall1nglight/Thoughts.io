@@ -18,7 +18,7 @@ public class DeleteReaction : IEndpoint
             .MapDelete("/{thoughtId}/reactions/user", Handle)
             .WithSummary("Deletes authorized user's reaction of a thought by id")
             .WithRequestValidation<Request>()
-            .WithEnsureEntityExistsFilter<Thought, Request>(x => x.ThoughtId);
+            .WithEnsureEntityIsAccessible<Thought, Request>(x => x.ThoughtId);
     }
 
     public record Request(Guid ThoughtId);
@@ -31,28 +31,22 @@ public class DeleteReaction : IEndpoint
         }
     }
 
-    private static async Task<Results<Ok, NotFound>> Handle(
+    private static async Task<Results<NoContent, NotFound>> Handle(
         [AsParameters] Request request,
         AppDbContext db,
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
     {
-        // todo | move this to filter
-        var isThoughtPublic = await db
-            .Thoughts.Where(x => x.Id == request.ThoughtId)
-            .Select(x => x.IsPublic)
-            .SingleAsync(cancellationToken);
-
-        if (!isThoughtPublic)
-            return TypedResults.NotFound();
-
-        await db
+        var rowsDeleted = await db
             .ThoughtReactions.Where(x =>
                 x.ThoughtId == request.ThoughtId && x.UserId == claimsPrincipal.GetUserId()
             )
             .ExecuteDeleteAsync(cancellationToken);
 
-        return TypedResults.Ok();
+        if (rowsDeleted == 0)
+            return TypedResults.NotFound();
+
+        return TypedResults.NoContent();
     }
 }

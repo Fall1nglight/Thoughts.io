@@ -19,7 +19,7 @@ public class CreateComment : IEndpoint
             .MapPost("/{thoughtId}/comments", Handle)
             .WithSummary("Create a new comment")
             .WithRequestValidation<Request>()
-            .WithEnsureEntityExistsFilter<Thought, Request>(x => x.ThoughtId);
+            .WithEnsureEntityIsAccessible<Thought, Request>(x => x.ThoughtId);
     }
 
     public record Body(string Content);
@@ -51,8 +51,6 @@ public class CreateComment : IEndpoint
         CancellationToken cancellationToken
     )
     {
-        // check if thought is private before proceeding
-
         var comment = new Comment
         {
             UserId = claimsPrincipal.GetUserId(),

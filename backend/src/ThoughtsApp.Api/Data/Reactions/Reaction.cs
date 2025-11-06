@@ -9,7 +9,12 @@ public class Reaction
     public const int DislikeId = 2;
     public const int LaughId = 3;
 
+    // ids
     public required int Id { get; set; }
+
+    // other properties
     public required string Name { get; set; }
+
+    // navigation properties
     public List<ThoughtReaction> Reactions { get; set; } = [];
 }

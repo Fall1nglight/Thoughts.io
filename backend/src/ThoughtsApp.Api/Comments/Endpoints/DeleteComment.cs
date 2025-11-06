@@ -19,8 +19,7 @@ public class DeleteComment : IEndpoint
             .MapDelete("/{thoughtId}/comments/{commentId}", Handle)
             .WithSummary("Deletes comment by id on thought by id")
             .WithRequestValidation<Request>()
-            .WithEnsureEntityExistsFilter<Thought, Request>(x => x.ThoughtId)
-            .WithEnsureUserOwnsEntity<Comment, Request>(x => x.CommentId);
+            .WithEnsureEntityIsAccessible<Thought, Request>(x => x.ThoughtId);
     }
 
     public record Request(Guid ThoughtId, Guid CommentId);
@@ -34,17 +33,24 @@ public class DeleteComment : IEndpoint
         }
     }
 
-    private static async Task<Results<Ok, NotFound>> Handle(
+    private static async Task<Results<NoContent, NotFound>> Handle(
         [AsParameters] Request request,
         AppDbContext db,
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
     {
-        await db
-            .Comments.Where(x => x.ThoughtId == request.ThoughtId && x.Id == request.CommentId)
+        var rowsDeleted = await db
+            .Comments.Where(x =>
+                x.Id == request.CommentId
+                && x.ThoughtId == request.ThoughtId
+                && x.UserId == claimsPrincipal.GetUserId()
+            )
             .ExecuteDeleteAsync(cancellationToken);
 
-        return TypedResults.Ok();
+        if (rowsDeleted == 0)
+            return TypedResults.NotFound();
+
+        return TypedResults.NoContent();
     }
 }

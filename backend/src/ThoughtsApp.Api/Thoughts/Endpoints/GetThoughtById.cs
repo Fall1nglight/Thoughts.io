@@ -6,6 +6,7 @@ using ThoughtsApp.Api.Authentication;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Shared;
+using ThoughtsApp.Api.Data.Thoughts;
 
 namespace ThoughtsApp.Api.Thoughts.Endpoints;
 
@@ -16,7 +17,8 @@ public class GetThoughtById : IEndpoint
         builder
             .MapGet("/{id}", Handle)
             .WithSummary("Gets thought by id")
-            .WithRequestValidation<Request>();
+            .WithRequestValidation<Request>()
+            .WithEnsureEntityIsAccessible<Thought, Request>(x => x.Id);
     }
 
     public record Request(Guid Id);
@@ -47,9 +49,7 @@ public class GetThoughtById : IEndpoint
     )
     {
         var thought = await db
-            .Thoughts.Where(x =>
-                x.Id == request.Id && (x.IsPublic || x.UserId == claimsPrincipal.GetUserId())
-            )
+            .Thoughts.Where(x => x.Id == request.Id)
             .Include(x => x.User)
             .Select(x => new Response(
                 x.Id,
@@ -60,10 +60,7 @@ public class GetThoughtById : IEndpoint
                 x.CreatedAtUtc,
                 x.UpdatedAtUtc
             ))
-            .SingleOrDefaultAsync(cancellationToken);
-
-        if (thought == null)
-            return TypedResults.NotFound();
+            .SingleAsync(cancellationToken);
 
         return TypedResults.Ok(thought);
     }
