@@ -1,3 +1,6 @@
+import 'bootswatch/dist/lux/bootstrap.min.css'
+import './assets/main.css'
+
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 

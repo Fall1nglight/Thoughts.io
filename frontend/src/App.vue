@@ -1,19 +1,21 @@
 <script setup>
-import 'bootstrap/dist/js/bootstrap.bundle.js'
 import { RouterView } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
+import ErrorModal from '@/components/ErrorModal.vue'
 </script>
 
 <template>
+  <ErrorModal></ErrorModal>
+
   <header>
     <NavBar></NavBar>
   </header>
 
   <main>
-    <RouterView />
+    <div class="container">
+      <RouterView />
+    </div>
   </main>
 </template>
 
-<style>
-@import 'bootswatch/dist/lux/bootstrap.min.css';
-</style>
+<style></style>
