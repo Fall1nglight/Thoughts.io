@@ -15,4 +15,13 @@ public static class ClaimsPrincipalExtensions
 
         return guid;
     }
+
+    public static bool IsAuthenticated(this ClaimsPrincipal claimsPrincipal)
+    {
+        var value = claimsPrincipal
+            .Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)
+            ?.Value;
+
+        return value == null;
+    }
 }

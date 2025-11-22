@@ -15,7 +15,7 @@ public class Thought : IEntity, IOwnedEntity, IAccessibleEntity
     public required string Title { get; set; }
     public required string Content { get; set; }
     public required bool IsPublic { get; set; }
-    public DateTime CreatedAtUtc { get; set; } = DateTime.Now;
+    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAtUtc { get; set; } = DateTime.MinValue;
 
     // navigation properties

@@ -1,6 +1,7 @@
 ﻿import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { defineStore } from 'pinia'
 import { authUri } from '@/config/api.config.js'
 import { useErrorStore } from '@/stores/error.js'
@@ -10,6 +11,9 @@ import roleTypes from '@/types/role.types.js'
 export const useAuthStore = defineStore('auth', () => {
   // other stores
   const errorStore = useErrorStore()
+
+  // router
+  const router = useRouter()
 
   // axios
   const client = axios.create({ baseURL: authUri })
@@ -47,7 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!getAccessToken.value) return
     const payload = getUserDataFromJwt()
 
-    if (payload.exp * 1000 <= new Date().getTime()) {
+    if (new Date().getTime() >= payload.exp * 1000) {
       resetTokens()
       return
     }
@@ -97,9 +101,11 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const { data } = await client.post('/signup', user)
       setTokens(data)
+
       const payload = getUserDataFromJwt()
       setUserData(payload)
     } catch (error) {
+      error.message = 'Invalid login credentials! Please try again.'
       handleError(error)
     }
   }
@@ -108,15 +114,33 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const { data } = await client.post('/login', user)
       setTokens(data)
+
       const payload = getUserDataFromJwt()
       setUserData(payload)
     } catch (error) {
+      error.message = 'Invalid login credentials! Please try again.'
       handleError(error)
     }
   }
 
-  function logout() {
+  async function refreshToken() {
+    try {
+      const { data } = await client.post('/refresh-token', {
+        token: getRefreshToken.value,
+      })
+      setTokens(data)
+
+      const payload = getUserDataFromJwt()
+      setUserData(payload)
+    } catch (error) {
+      error.message = 'Invalid refresh token!'
+      handleError(error)
+    }
+  }
+
+  async function logout() {
     $reset()
+    await router.push('/')
   }
 
   function $reset() {
@@ -146,6 +170,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAdmin,
     signup,
     login,
+    refreshToken,
     logout,
     $reset,
   }

@@ -1,12 +1,10 @@
 ﻿<script setup>
 import { useAuthStore } from '@/stores/auth.js'
-import { useRouter } from 'vue-router'
+
+// todo | delete this view and use a button instead which calls the "logout()" method
 
 const { logout } = useAuthStore()
-const router = useRouter()
-
 logout()
-router.push('/')
 </script>
 
 <template>

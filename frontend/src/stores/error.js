@@ -17,7 +17,11 @@ export const useErrorStore = defineStore('error', () => {
   // action
   function addError(type, err) {
     currentError.value.type = type || 'Unknown error type'
-    currentError.value.message = err.message || 'Unknown error'
+
+    currentError.value.message =
+      (err?.code === 'ERR_NETWORK' ? 'Failed to connect to the API.' : err?.message) ||
+      'Unknown error'
+
     currentError.value.details = err
   }
 

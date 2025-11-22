@@ -32,7 +32,7 @@ public class CreateThought : IEndpoint
                 .WithMessage("{PropertyName} is required.")
                 .MinimumLength(5)
                 .WithMessage("{PropertyName} must be at least {MinLength} characters long.")
-                .MaximumLength(500)
+                .MaximumLength(50)
                 .WithMessage("{PropertyName} must not exceed {MaxLength} characters.");
 
             RuleFor(x => x.Content)
@@ -40,7 +40,7 @@ public class CreateThought : IEndpoint
                 .WithMessage("{PropertyName} is required.")
                 .MinimumLength(5)
                 .WithMessage("{PropertyName} must be at least {MinLength} characters long.")
-                .MaximumLength(500)
+                .MaximumLength(250)
                 .WithMessage("{PropertyName} must not exceed {MaxLength} characters.");
 
             RuleFor(x => x.IsPublic).NotNull().WithMessage("{PropertyName} is required.");

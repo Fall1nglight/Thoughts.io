@@ -55,7 +55,7 @@ public class GetComments : IEndpoint
             .Select(x => new Comment(
                 x.Id,
                 x.Content,
-                x.UpdatedAtUtc,
+                x.CreatedAtUtc,
                 x.UpdatedAtUtc,
                 new User(x.User.Username)
             ))
