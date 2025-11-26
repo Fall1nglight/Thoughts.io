@@ -1,13 +1,19 @@
 ﻿<script setup>
+import { computed, provide } from 'vue'
 import { formatDistanceToNow } from 'date-fns'
-import { computed } from 'vue'
+import { provideTypes } from '@/types/provide.types.js'
 import ReactionContainer from '@/components/ReactionContainer.vue'
 import ThoughtCommentButton from '@/components/ThoughtCommentButton.vue'
 
+// Props and emits
 const { thought } = defineProps({
   thought: Object,
 })
 
+// Provide and inject
+provide(provideTypes.thought, thought)
+
+// Derived state
 const wasEverUpdated = computed(() => new Date(thought.updatedAtUtc).getUTCFullYear() > 1)
 </script>
 
@@ -39,10 +45,7 @@ const wasEverUpdated = computed(() => new Date(thought.updatedAtUtc).getUTCFullY
         </div>
 
         <div class="d-flex">
-          <ThoughtCommentButton
-            :thought="thought"
-            :comments="thought.comments"
-          ></ThoughtCommentButton>
+          <ThoughtCommentButton></ThoughtCommentButton>
 
           <ReactionContainer
             :reactions="thought.reactions"

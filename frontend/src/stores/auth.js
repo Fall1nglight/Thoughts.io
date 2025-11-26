@@ -45,6 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = computed(() => user.value.roles.indexOf(roleTypes.admin) > 0)
   const getAccessToken = computed(() => tokens.value.accessToken)
   const getRefreshToken = computed(() => tokens.value.refreshToken)
+  const getUserId = computed(() => user.value.id)
 
   // actions
   function initAuth() {
@@ -166,6 +167,7 @@ export const useAuthStore = defineStore('auth', () => {
     tokens,
     getAccessToken,
     getRefreshToken,
+    getUserId,
     isLoggedIn,
     isAdmin,
     signup,

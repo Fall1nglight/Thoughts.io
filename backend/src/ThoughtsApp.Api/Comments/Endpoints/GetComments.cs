@@ -23,7 +23,7 @@ public class GetComments : IEndpoint
 
     public record Request(Guid ThoughtId);
 
-    public record User(string Username);
+    public record User(Guid Id, string Username);
 
     public record Comment(
         Guid Id,
@@ -57,7 +57,7 @@ public class GetComments : IEndpoint
                 x.Content,
                 x.CreatedAtUtc,
                 x.UpdatedAtUtc,
-                new User(x.User.Username)
+                new User(x.UserId, x.User.Username)
             ))
             .ToListAsync(cancellationToken);
 

@@ -1,11 +1,13 @@
 ﻿<script setup>
-import { useErrorStore } from '@/stores/error.js'
 import { onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useErrorStore } from '@/stores/error.js'
 
+// Dependencies
 const errorStore = useErrorStore()
 const { currentError, modal, hasError } = storeToRefs(errorStore)
 
+// Hooks and watchers
 onMounted(() => {
   if (window.bootstrap) {
     if (!modal.value) {

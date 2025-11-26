@@ -1,15 +1,18 @@
 ﻿<script setup>
-import { useThoughtsStore } from '@/stores/thoughts.js'
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useThoughtsStore } from '@/stores/thoughts.js'
 import ThoughtCard from '@/components/ThoughtCard.vue'
 
+// Dependencies
 const thoughtsStore = useThoughtsStore()
 const { publicThoughts, hasPublicThoughts } = storeToRefs(thoughtsStore)
 const { fetchPublicThoughts } = thoughtsStore
 
+// Local state
 const loading = ref(true)
 
+// Hooks and watchers
 onMounted(async () => {
   loading.value = true
   await fetchPublicThoughts()

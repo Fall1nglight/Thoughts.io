@@ -47,6 +47,8 @@ export const useThoughtsStore = defineStore('thoughts', () => {
   // state
   const thoughts = ref([])
   const focusedThought = ref(null)
+  const focusedComments = ref([])
+  const focusedReactions = ref([])
   const modal = ref(null)
 
   // getters
@@ -168,10 +170,20 @@ export const useThoughtsStore = defineStore('thoughts', () => {
     }
   }
 
+  async function fetchReactions(thoughtId) {
+    try {
+      const { data } = await client.get(`/${thoughtId}/reactions`)
+      focusedReactions.value = data.reactions
+    } catch (error) {
+      handleError(error)
+    }
+  }
+
   async function fetchComments(thoughtId) {
     try {
       const { data } = await client.get(`/${thoughtId}/comments`)
-      return data
+
+      focusedComments.value = data.comments
     } catch (error) {
       handleError(error)
     }
@@ -180,12 +192,15 @@ export const useThoughtsStore = defineStore('thoughts', () => {
   return {
     thoughts,
     focusedThought,
-    modal,
+    focusedComments,
+    focusedReactions,
     publicThoughts,
     hasPublicThoughts,
     fetchPublicThoughts,
     toggleReaction,
     fetchReactionsById,
+    fetchReactions,
     fetchComments,
+    modal,
   }
 })

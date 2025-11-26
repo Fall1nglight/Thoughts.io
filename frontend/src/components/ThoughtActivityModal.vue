@@ -1,14 +1,47 @@
 ﻿<script setup>
-import { onMounted, provide, ref, watch } from 'vue'
-import { useThoughtsStore } from '@/stores/thoughts.js'
+import { computed, onMounted, provide, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useThoughtsStore } from '@/stores/thoughts.js'
 import reactionTypes from '@/types/reaction.types.js'
 import ThoughtCommentsTab from '@/components/ThoughtCommentsTab.vue'
 import ThoughtReactionsTab from '@/components/ThoughtReactionsTab.vue'
 
+// Dependencies
 const thoughtsStore = useThoughtsStore()
 const { modal, focusedThought } = storeToRefs(thoughtsStore)
 
+// Local state
+const tabs = {
+  comments: ThoughtCommentsTab,
+  reactions: ThoughtReactionsTab,
+}
+
+const activeTab = ref('comments')
+const activeReactionId = ref(0)
+
+// Derived state
+const commentsTabStyle = computed(() => (activeTab.value === 'comments' ? 'active' : ''))
+
+// Methods
+function setActiveTab(tab) {
+  activeTab.value = tab
+  activeReactionId.value = 0
+}
+
+function setActiveTabWithReactionId(tab, reactionId) {
+  activeTab.value = tab
+  activeReactionId.value = reactionId
+}
+
+function getIconStyle(reactionId) {
+  return reactionTypes[reactionId]
+}
+
+function isReactionActive(reactionId) {
+  return activeReactionId.value === reactionId
+}
+
+// Hooks and watchers
 onMounted(() => {
   if (window.bootstrap) {
     if (!modal.value) {
@@ -30,28 +63,16 @@ onMounted(() => {
   }
 })
 
-watch(focusedThought, (newVal) => {
+// todo | implement loader with composables
+watch(focusedThought, async (newVal) => {
   if (newVal) modal.value.show()
+  if (newVal?.id) {
+    await thoughtsStore.fetchReactions(newVal.id)
+    await thoughtsStore.fetchComments(newVal.id)
+  }
 })
 
-const tabs = {
-  comments: ThoughtCommentsTab,
-  reactions: ThoughtReactionsTab,
-}
-
-const activeTab = ref('comments')
-const activeReactionId = ref(null)
-
-function setActiveTab(tab) {
-  activeTab.value = tab
-}
-
-function setActiveTabWithReactionId(tab, reactionId) {
-  setActiveTab(tab)
-
-  activeReactionId.value = reactionId
-}
-
+// provide and inject
 provide('activeReactionId', activeReactionId)
 </script>
 
@@ -66,7 +87,12 @@ provide('activeReactionId', activeReactionId)
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <button @click="setActiveTab('comments')" type="button" class="btn btn-dark">
+          <button
+            @click="setActiveTab('comments')"
+            type="button"
+            class="btn btn-dark"
+            :class="commentsTabStyle"
+          >
             Comments
           </button>
 
@@ -76,8 +102,9 @@ provide('activeReactionId', activeReactionId)
             @click="setActiveTabWithReactionId('reactions', reaction.id)"
             type="button"
             class="btn btn-dark mx-2"
+            :class="{ active: isReactionActive(reaction.id) }"
           >
-            <i :class="reactionTypes[reaction.id]"></i>
+            <i :class="getIconStyle(reaction.id)"></i>
             <span>{{ reaction.count }}</span>
           </button>
 
@@ -96,4 +123,8 @@ provide('activeReactionId', activeReactionId)
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.active {
+  color: navajowhite;
+}
+</style>

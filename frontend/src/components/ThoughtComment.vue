@@ -1,16 +1,28 @@
 ﻿<script setup>
-import { formatDistanceToNow } from 'date-fns'
 import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useAuthStore } from '@/stores/auth.js'
+import { formatDistanceToNow } from 'date-fns'
 
+// Props and emits
 const { comment } = defineProps({
   comment: Object,
 })
 
+// Dependencies
+const authStore = useAuthStore()
+const { getUserId } = storeToRefs(authStore)
+
+// Derived state
+const ownedComment = computed(() => comment.user.id === getUserId.value)
 const wasEverUpdated = computed(() => new Date(comment.updatedAtUtc).getUTCFullYear() > 1)
 
+// Methods
 function formatDate(date) {
   return formatDistanceToNow(new Date(date), { addSuffix: true })
 }
+
+// todo | implement option to sort comments (default sorting behaviour: user's comments)
 </script>
 
 <template>

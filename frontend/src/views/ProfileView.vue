@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth.js'
 
+// Dependencies
 const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)
 </script>

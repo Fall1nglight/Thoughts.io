@@ -1,21 +1,23 @@
 ﻿<script setup>
-import { useAuthStore } from '@/stores/auth.js'
+import { computed, inject } from 'vue'
 import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth.js'
 import { useThoughtsStore } from '@/stores/thoughts.js'
+import { provideTypes } from '@/types/provide.types.js'
 
-const { thought, comments } = defineProps({
-  thought: Object,
-  comments: Object,
-})
-
+// Dependencies
 const authStore = useAuthStore()
 const thoughtsStore = useThoughtsStore()
 const { isLoggedIn } = storeToRefs(authStore)
 const { focusedThought } = storeToRefs(thoughtsStore)
 
+// Derived state
 const buttonStyle = computed(() => (isLoggedIn.value ? 'comment-button' : ''))
 
+// Provide and inject
+const thought = inject(provideTypes.thought)
+
+// Methods
 function handleButtonClick() {
   if (!isLoggedIn.value) return
 
@@ -26,7 +28,7 @@ function handleButtonClick() {
 <template>
   <span @click="handleButtonClick" :class="buttonStyle">
     <i class="fa-solid fa-comment"></i>
-    <span>{{ comments.count }}</span>
+    <span>{{ thought.comments.count }}</span>
   </span>
 </template>
 

@@ -1,18 +1,17 @@
 ﻿<script setup>
+import { inject } from 'vue'
+import { provideTypes } from '@/types/provide.types.js'
 import ReactionButton from '@/components/ReactionButton.vue'
 
-const { reactions } = defineProps({
-  reactions: Array,
-  thoughtId: String,
-})
+// provide and inject
+const thought = inject(provideTypes.thought)
 </script>
 
 <template>
   <div class="d-flex align-items-center">
     <ReactionButton
-      v-for="reaction in reactions"
+      v-for="reaction in thought.reactions"
       :reaction="reaction"
-      :thought-id="thoughtId"
       :key="reaction.id"
     ></ReactionButton>
   </div>

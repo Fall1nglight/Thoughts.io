@@ -1,10 +1,14 @@
 ﻿<script setup>
+import { onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth.js'
 
 // todo | delete this view and use a button instead which calls the "logout()" method
 
+// Dependencies
 const { logout } = useAuthStore()
-logout()
+
+// Hooks and watchers
+onMounted(() => logout())
 </script>
 
 <template>

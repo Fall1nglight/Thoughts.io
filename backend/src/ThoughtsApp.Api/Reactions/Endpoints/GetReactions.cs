@@ -2,7 +2,6 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using ThoughtsApp.Api.Authentication;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Shared;
@@ -23,9 +22,11 @@ public class GetReactions : IEndpoint
 
     public record Request(Guid ThoughtId);
 
-    public record User(string Username);
+    public record User(Guid Id, string Username);
 
-    public record Response(int ReactionId, List<User> Users);
+    public record Reaction(int Id, List<User> Users);
+
+    public record Response(Guid ThoughtId, List<Reaction> Reactions);
 
     public class RequestValidator : AbstractValidator<Request>
     {
@@ -35,7 +36,7 @@ public class GetReactions : IEndpoint
         }
     }
 
-    private static async Task<Results<Ok<List<Response>>, NotFound>> Handle(
+    private static async Task<Results<Ok<Response>, NotFound>> Handle(
         [AsParameters] Request request,
         AppDbContext db,
         ClaimsPrincipal claimsPrincipal,
@@ -45,12 +46,13 @@ public class GetReactions : IEndpoint
         var reactions = await db
             .ThoughtReactions.Where(x => x.ThoughtId == request.ThoughtId)
             .GroupBy(tr => tr.ReactionId)
-            .Select(group => new Response(
+            .Select(group => new Reaction(
                 group.Key,
-                group.Select(tr => new User(tr.User.Username)).ToList()
+                group.Select(tr => new User(tr.UserId, tr.User.Username)).ToList()
             ))
             .ToListAsync(cancellationToken);
 
-        return TypedResults.Ok(reactions);
+        var response = new Response(request.ThoughtId, reactions);
+        return TypedResults.Ok(response);
     }
 }

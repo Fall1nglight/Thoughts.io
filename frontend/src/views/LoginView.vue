@@ -7,17 +7,20 @@ import { useErrorStore } from '@/stores/error.js'
 import schemas from '@/validation/index.js'
 import errorTypes from '@/types/error.types.js'
 
+// Dependencies
 const authStore = useAuthStore()
 const errorStore = useErrorStore()
 const { isLoggedIn } = storeToRefs(authStore)
 
 const router = useRouter()
 
+// Local state
 const user = ref({
   email: '',
   password: '',
 })
 
+// Methods
 const handleSubmit = async () => {
   try {
     await schemas.auth.login.validateAsync(user.value)

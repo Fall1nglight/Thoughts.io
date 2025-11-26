@@ -1,36 +1,23 @@
 ﻿<script setup>
-import { inject, ref, watchEffect } from 'vue'
-import { useThoughtsStore } from '@/stores/thoughts.js'
+import { computed, inject } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useThoughtsStore } from '@/stores/thoughts.js'
 
-const reactionId = inject('activeReactionId')
+// Dependencies
 const thoughtsStore = useThoughtsStore()
-const { focusedThought } = storeToRefs(thoughtsStore)
+const { focusedReactions } = storeToRefs(thoughtsStore)
 
-const loading = ref(true)
-const usersReacted = ref([])
+// Provide and inject
+const reactionId = inject('activeReactionId')
 
-watchEffect(async () => {
-  loading.value = true
-
-  const reactions = await thoughtsStore.fetchReactionsById(
-    focusedThought.value.id,
-    reactionId.value,
-  )
-
-  usersReacted.value = reactions.users
-
-  setTimeout(() => {
-    loading.value = false
-  }, 250)
-})
+// Derived state
+const usersReacted = computed(
+  () => focusedReactions.value.find((r) => r.id === reactionId.value)?.users || [],
+)
 </script>
 
 <template>
-  <div v-if="loading" class="d-flex align-items-center justify-content-center">
-    <div class="loader"></div>
-  </div>
-  <div v-else-if="!usersReacted.length">Nobody used this reaction</div>
+  <div v-if="!usersReacted.length">Nobody used this reaction</div>
   <div v-else>
     <div>Users reacted:</div>
     <ul>
