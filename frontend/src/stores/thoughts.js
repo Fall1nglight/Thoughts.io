@@ -132,11 +132,12 @@ export const useThoughtsStore = defineStore('thoughts', () => {
       if (!newThought.isPublic) {
         // nem kell újra lekérni az API-ból, hiszen ha privátra állítottuk, akkor
         // csak a saját oldalunkon tekinthetjük meg
-        // de ha a saját oldalunkat megnyitjuk, akkor lekérjük alapból az API-ból
+        // de ha a saját oldalunkat megnyitjuk, akkor lekérjük alapból az API-ból => felesleges dupla fetch elkerülése
         thoughts.value = thoughts.value.map((x) => {
           if (x.id !== newThought.id) return x
 
           x.isPublic = false
+          return x
         })
       } else {
         // fetch thought's new details
@@ -162,6 +163,7 @@ export const useThoughtsStore = defineStore('thoughts', () => {
 
           x.title = thought.title
           x.content = thought.content
+          x.isPublic = thought.isPublic
           x.updatedAtUtc = thought.updatedAtUtc
           return x
         })

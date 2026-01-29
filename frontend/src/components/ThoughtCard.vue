@@ -48,6 +48,7 @@ async function handleEdit() {
     content: newThought.value.content,
     isPublic: newThought.value.isPublic,
   }
+
   updateThoughtById(payload).then(() => (editMode.value = false))
 }
 
@@ -56,7 +57,10 @@ provide(provideTypes.thought, thought)
 </script>
 
 <template>
-  <div class="col">
+  <div
+    class="col"
+    :class="thought.isPublic ? 'border border-3 border-success' : 'border border-3 border-warning'"
+  >
     <div class="card">
       <div class="card-header d-flex align-items-center justify-content-between">
         <div>
