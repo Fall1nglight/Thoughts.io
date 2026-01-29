@@ -6,6 +6,7 @@ using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Filters;
 using ThoughtsApp.Api.Reactions.Endpoints;
 using ThoughtsApp.Api.Thoughts.Endpoints;
+using ThoughtsApp.Api.Users;
 
 namespace ThoughtsApp.Api;
 
@@ -38,6 +39,7 @@ public static class Endpoints
 
         endpoints.MapAuthenticationEndpoints();
         endpoints.MapThoughtEndpoints();
+        endpoints.MapUserEndpoints();
     }
 
     /// <summary>
@@ -66,16 +68,18 @@ public static class Endpoints
     {
         var endpoints = builder.MapGroup("/thoughts").WithTags("Thoughts");
 
-        endpoints.MapPublicGroup().MapEndpoint<GetPublicThoughts>();
-
         // thought endpoints
         endpoints
             .MapAuthorizedGroup()
-            .MapEndpoint<GetUserThoughts>()
-            .MapEndpoint<GetThoughtById>()
             .MapEndpoint<CreateThought>()
             .MapEndpoint<UpdateThought>()
             .MapEndpoint<DeleteThought>();
+
+        endpoints
+            .MapPublicGroup()
+            .MapEndpoint<GetPublicThoughts>()
+            .MapEndpoint<GetThoughtsByUserId>()
+            .MapEndpoint<GetThoughtById>();
 
         // reaction endpoints
         endpoints
@@ -89,9 +93,21 @@ public static class Endpoints
         endpoints
             .MapAuthorizedGroup()
             .MapEndpoint<GetComments>()
+            .MapEndpoint<GetComment>()
             .MapEndpoint<CreateComment>()
             .MapEndpoint<UpdateComment>()
             .MapEndpoint<DeleteComment>();
+    }
+
+    private static void MapUserEndpoints(this RouteGroupBuilder builder)
+    {
+        var endpoints = builder.MapGroup("/users").WithTags("Users");
+
+        // public user endpoints
+        endpoints.MapPublicGroup().MapEndpoint<GetUser>();
+
+        // authorized user endpoints
+        endpoints.MapAuthorizedGroup().MapEndpoint<UpdateUser>().MapEndpoint<DeleteUser>();
     }
 
     /// <summary>

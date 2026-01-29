@@ -37,8 +37,8 @@ public class GetPublicThoughts : IEndpoint
 
     private static async Task<Ok<Response>> Handle(
         AppDbContext db,
-        CancellationToken cancellationToken,
-        ClaimsPrincipal claimsPrincipal
+        ClaimsPrincipal claimsPrincipal,
+        CancellationToken cancellationToken
     )
     {
         Guid? userId = null;

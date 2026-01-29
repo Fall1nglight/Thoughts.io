@@ -7,13 +7,13 @@ import { useThoughtsStore } from '@/stores/thoughts.js'
 const thoughtsStore = useThoughtsStore()
 const { focusedReactions } = storeToRefs(thoughtsStore)
 
-// Provide and inject
-const reactionId = inject('activeReactionId')
-
 // Derived state
 const usersReacted = computed(
   () => focusedReactions.value.find((r) => r.id === reactionId.value)?.users || [],
 )
+
+// Inject
+const reactionId = inject('activeReactionId')
 </script>
 
 <template>

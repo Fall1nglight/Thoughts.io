@@ -40,12 +40,9 @@ const routes = [
   },
 
   {
-    path: '/profile',
+    path: '/profile/:userId',
     name: 'profile',
     component: ProfileView,
-    meta: {
-      [metaProperties.requiresAuth]: true,
-    },
   },
 
   {

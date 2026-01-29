@@ -10,7 +10,7 @@ const { publicThoughts, hasPublicThoughts } = storeToRefs(thoughtsStore)
 const { fetchPublicThoughts } = thoughtsStore
 
 // Local state
-const loading = ref(true)
+const loading = ref(false)
 
 // Hooks and watchers
 onMounted(async () => {

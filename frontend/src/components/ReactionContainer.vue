@@ -3,7 +3,7 @@ import { inject } from 'vue'
 import { provideTypes } from '@/types/provide.types.js'
 import ReactionButton from '@/components/ReactionButton.vue'
 
-// provide and inject
+// Inject
 const thought = inject(provideTypes.thought)
 </script>
 

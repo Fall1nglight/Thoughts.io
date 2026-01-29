@@ -1,5 +1,31 @@
 <script setup>
-import ThoughtCardContainer from '@/components/ThoughtCardContainer.vue'
+import ThoughtForm from '@/components/ThoughtForm.vue'
+import { useAuthStore } from '@/stores/auth.js'
+import { storeToRefs } from 'pinia'
+import { useThoughtsStore } from '@/stores/thoughts.js'
+import { onMounted, ref } from 'vue'
+import CardContainer from '@/components/CardContainer.vue'
+
+// Dependencies
+const authStore = useAuthStore()
+const thoughtsStore = useThoughtsStore()
+const { isLoggedIn } = storeToRefs(authStore)
+const { hasPublicThoughts, publicThoughts } = storeToRefs(thoughtsStore)
+const { fetchPublicThoughts } = thoughtsStore
+
+// Local state
+const loading = ref(false)
+
+// Hooks and watchers
+onMounted(async () => {
+  loading.value = true
+
+  await fetchPublicThoughts()
+
+  setTimeout(() => {
+    loading.value = false
+  }, 500)
+})
 </script>
 
 <template>
@@ -10,8 +36,16 @@ import ThoughtCardContainer from '@/components/ThoughtCardContainer.vue'
     </div>
   </section>
 
+  <section v-if="isLoggedIn" class="thoughtForm p-5">
+    <ThoughtForm></ThoughtForm>
+  </section>
+
   <section class="publicThoughts p-5">
-    <ThoughtCardContainer></ThoughtCardContainer>
+    <CardContainer
+      :loading="loading"
+      :hasThoughts="hasPublicThoughts"
+      :thoughts="publicThoughts"
+    ></CardContainer>
   </section>
 </template>
 

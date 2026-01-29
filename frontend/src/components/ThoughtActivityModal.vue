@@ -22,6 +22,9 @@ const activeReactionId = ref(0)
 // Derived state
 const commentsTabStyle = computed(() => (activeTab.value === 'comments' ? 'active' : ''))
 
+// Provide
+provide('activeReactionId', activeReactionId)
+
 // Methods
 function setActiveTab(tab) {
   activeTab.value = tab
@@ -71,9 +74,6 @@ watch(focusedThought, async (newVal) => {
     await thoughtsStore.fetchComments(newVal.id)
   }
 })
-
-// provide and inject
-provide('activeReactionId', activeReactionId)
 </script>
 
 <template>
@@ -84,7 +84,7 @@ provide('activeReactionId', activeReactionId)
     aria-labelledby="activity-modal-label"
     aria-hidden="true"
   >
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable align-items-baseline">
       <div class="modal-content">
         <div class="modal-header">
           <button

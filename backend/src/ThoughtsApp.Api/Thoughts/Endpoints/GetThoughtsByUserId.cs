@@ -6,22 +6,20 @@ using ThoughtsApp.Api.Authentication;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Shared;
-using ThoughtsApp.Api.Data.Thoughts;
 
 namespace ThoughtsApp.Api.Thoughts.Endpoints;
 
-public class GetThoughtById : IEndpoint
+public class GetThoughtsByUserId : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder builder)
     {
         builder
-            .MapGet("/{id}", Handle)
-            .WithSummary("Gets thought by id")
-            .WithRequestValidation<Request>()
-            .WithEnsureEntityIsAccessible<Api.Data.Thoughts.Thought, Request>(x => x.Id);
+            .MapGet("/user/{userId}", Handle)
+            .WithSummary("Gets thoughts by userId")
+            .WithRequestValidation<Request>();
     }
 
-    public record Request(Guid Id);
+    public record Request(Guid UserId);
 
     public record User(Guid Id, string Username);
 
@@ -42,17 +40,17 @@ public class GetThoughtById : IEndpoint
         DateTime UpdatedAtUtc
     );
 
-    public record Response(Thought Thought);
+    public record Response(List<Thought> Thoughts);
 
     public class RequestValidator : AbstractValidator<Request>
     {
         public RequestValidator()
         {
-            RuleFor(x => x.Id).NotEmpty().WithMessage("{PropertyName} is required.");
+            RuleFor(x => x.UserId).NotEmpty().WithMessage("{PropertyName} is required.");
         }
     }
 
-    private static async Task<Results<Ok<Response>, NotFound>> Handle(
+    private static async Task<Ok<Response>> Handle(
         [AsParameters] Request request,
         AppDbContext db,
         ClaimsPrincipal claimsPrincipal,
@@ -64,8 +62,21 @@ public class GetThoughtById : IEndpoint
         if (claimsPrincipal.Identity?.IsAuthenticated == true)
             userId = claimsPrincipal.GetUserId();
 
-        var thought = await db
-            .Thoughts.Where(x => x.Id == request.Id)
+        // todo
+        // 1. ha nincs bejelentkezve csak a publikus gondolatokat adjuk vissza
+        // 2. ha be van jelentkezve a felhasználó és a saját gondolatait kéri -> mindet visszaadjuk
+        // 3. ha be van jelentkezve és nem a saját gondolatait kéri -> csak a publikusokat adjuk
+        // 1. és 3. ugyan az => össze kell vonni
+
+        var userThoughts = await db
+            .Thoughts.Where(t =>
+                t.UserId == request.UserId
+                && (
+                    userId == null || userId.Value != request.UserId
+                        ? t.IsPublic == true
+                        : t.IsPublic == true || t.IsPublic == false
+                )
+            )
             .AsNoTracking()
             .Select(t => new Thought(
                 t.Id,
@@ -86,9 +97,9 @@ public class GetThoughtById : IEndpoint
                 t.CreatedAtUtc,
                 t.UpdatedAtUtc
             ))
-            .SingleAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
 
-        var response = new Response(thought);
+        var response = new Response(userThoughts);
 
         return TypedResults.Ok(response);
     }

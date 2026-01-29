@@ -16,12 +16,13 @@ public static class ClaimsPrincipalExtensions
         return guid;
     }
 
-    public static bool IsAuthenticated(this ClaimsPrincipal claimsPrincipal)
+    public static string GetUserName(this ClaimsPrincipal claimsPrincipal)
     {
-        var value = claimsPrincipal
-            .Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)
-            ?.Value;
+        var value = claimsPrincipal.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
 
-        return value == null;
+        if (value == null)
+            throw new Exception("Username is invalid.");
+
+        return value;
     }
 }

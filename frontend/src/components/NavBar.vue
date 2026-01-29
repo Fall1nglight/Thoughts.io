@@ -42,8 +42,10 @@ const { user, isLoggedIn, isAdmin } = storeToRefs(authStore)
           <!--            <RouterLink to="/about" class="nav-link">About</RouterLink>-->
           <!--          </li>-->
 
-          <li v-show="isLoggedIn" class="nav-item">
-            <RouterLink to="/profile" class="nav-link">{{ user.username }}</RouterLink>
+          <li v-if="isLoggedIn" class="nav-item">
+            <RouterLink :to="{ name: 'profile', params: { userId: user.id } }" class="nav-link">{{
+              user.username
+            }}</RouterLink>
           </li>
 
           <li v-show="isAdmin" class="nav-item">

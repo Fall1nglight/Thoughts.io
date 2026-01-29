@@ -19,6 +19,9 @@ const { isLoggedIn } = storeToRefs(authStore)
 // Derived state
 const buttonStyle = computed(() => (isLoggedIn.value ? 'mx-1 reaction-button' : 'mx-1'))
 
+// Inject
+const thought = inject(provideTypes.thought)
+
 // Composable
 const { iconStyle } = useReactionStyle(reaction.id)
 
@@ -28,9 +31,6 @@ function handleReactionButtonClick(thoughtId, reactionId) {
 
   toggleReaction(thoughtId, reactionId)
 }
-
-// Provide and inject
-const thought = inject(provideTypes.thought)
 </script>
 
 <template>
