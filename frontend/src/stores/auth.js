@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineStore } from 'pinia'
-import { authUri } from '@/config/api.config.js'
+import { authUri, usersUri } from '@/config/api.config.js'
 import { useErrorStore } from '@/stores/error.js'
 import errorTypes from '@/types/error.types.js'
 import claimTypes from '@/types/claim.types.js'
@@ -17,6 +17,17 @@ export const useAuthStore = defineStore('auth', () => {
 
   // axios
   const client = axios.create({ baseURL: authUri })
+  const userClient = axios.create({ baseURL: usersUri })
+
+  userClient.interceptors.request.use((config) => {
+    const token = getAccessToken.value
+
+    if (token) {
+      config.headers.Authorization = 'Bearer ' + token
+    }
+
+    return config
+  })
 
   // state
   const user = ref({
@@ -65,9 +76,6 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function setUserData(payload) {
-    // todo | handle email later
-    // user.value.email = payload[claimTypes.email]
-
     user.value.id = payload[claimTypes.id]
     user.value.username = payload[claimTypes.username]
     user.value.iat = payload.iat
@@ -139,6 +147,30 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function updateUser(newSetting) {
+    try {
+      const updateResponse = await userClient.patch(`/${getUserId.value}`, newSetting)
+
+      if (updateResponse.status !== 204) throw new Error('Failed to update user!')
+
+      await refreshToken()
+    } catch (error) {
+      handleError(error)
+    }
+  }
+
+  async function deleteUser() {
+    try {
+      const deleteResponse = await userClient.delete(`/${getUserId.value}`)
+
+      if (deleteResponse.status !== 204) throw new Error('Failed to delete user!')
+
+      await logout()
+    } catch (error) {
+      handleError(error)
+    }
+  }
+
   async function logout() {
     $reset()
     await router.push('/')
@@ -173,6 +205,8 @@ export const useAuthStore = defineStore('auth', () => {
     signup,
     login,
     refreshToken,
+    updateUser,
+    deleteUser,
     logout,
     $reset,
   }

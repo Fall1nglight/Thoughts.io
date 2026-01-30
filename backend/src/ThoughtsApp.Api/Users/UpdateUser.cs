@@ -93,7 +93,7 @@ public class UpdateUser : IEndpoint
         }
     }
 
-    private static async Task<Results<Ok<Response>, BadRequest<ProblemDetails>>> Handle(
+    private static async Task<Results<NoContent, BadRequest<ProblemDetails>>> Handle(
         [AsParameters] Request request,
         AppDbContext db,
         PasswordHasher passwordHasher,
@@ -154,15 +154,6 @@ public class UpdateUser : IEndpoint
         }
 
         await db.SaveChangesAsync(cancellationToken);
-
-        // nem kell refreshTokent generálni, hiszen ez a route
-        // csak bejelentkezett felhasználók számára érhető el => rendelkeznek refreshTokennel
-        // elég, ha küldünk egy új accessTokent, amit a frontend feldolgoz majd
-        // ha pedig lejárna az accessToken, a refreshToken egy új accessTokent fog generálni
-        // amiben a már frissített adatok szerepelnek
-
-        var accessToken = await jwtProvider.GenerateToken(user);
-        var response = new Response(accessToken);
-        return TypedResults.Ok(response);
+        return TypedResults.NoContent();
     }
 }

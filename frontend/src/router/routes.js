@@ -6,6 +6,7 @@ import ProfileView from '@/views/ProfileView.vue'
 import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import AdminDashboardView from '@/views/AdminDashboardView.vue'
 import LogoutView from '@/views/LogoutView.vue'
+import UserSettingsView from '@/views/UserSettingsView.vue'
 import metaProperties from '@/router/metaProperties.js'
 
 const routes = [
@@ -37,6 +38,15 @@ const routes = [
     path: '/about',
     name: 'about',
     component: AboutView,
+  },
+
+  {
+    path: '/user-settings',
+    name: 'user-settings',
+    component: UserSettingsView,
+    meta: {
+      [metaProperties.requiresAuth]: true,
+    },
   },
 
   {

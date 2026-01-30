@@ -32,6 +32,7 @@ async function fetchUserData() {
   loading.value = false
 }
 
+// Hooks and watchers
 watch(
   () => route.params.userId,
   async () => {
@@ -39,8 +40,6 @@ watch(
   },
   { immediate: true },
 )
-
-// Lifecycle hooks & Watchers
 </script>
 
 <template>
