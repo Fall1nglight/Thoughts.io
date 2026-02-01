@@ -53,7 +53,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // getters
   const isLoggedIn = computed(() => !!user.value.id)
-  const isAdmin = computed(() => user.value.roles.indexOf(roleTypes.admin) > 0)
+  const isAdmin = computed(() => user.value.roles.some((x) => x === roleTypes.admin))
   const getAccessToken = computed(() => tokens.value.accessToken)
   const getRefreshToken = computed(() => tokens.value.refreshToken)
   const getUserId = computed(() => user.value.id)

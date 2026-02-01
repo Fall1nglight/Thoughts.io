@@ -75,7 +75,15 @@ function isActiveForm(form) {
 </template>
 
 <style scoped>
+.btn-secondary {
+  color: black;
+}
+
 h1 {
+  color: white;
+}
+
+* {
   color: white;
 }
 </style>

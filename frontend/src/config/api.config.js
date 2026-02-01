@@ -2,3 +2,5 @@
 export const authUri = baseUri + '/auth'
 export const thoughtsUri = baseUri + '/thoughts'
 export const usersUri = baseUri + '/users'
+
+export const adminUri = baseUri + '/admin'

@@ -5,7 +5,6 @@ import { useAuthStore } from '@/stores/auth.js'
 import { computed, ref } from 'vue'
 import { useErrorStore } from '@/stores/error.js'
 import errorTypes from '@/types/error.types.js'
-import reactionTypes from '@/types/reaction.types.js'
 
 export const useUserStore = defineStore('user', () => {
   // other stores

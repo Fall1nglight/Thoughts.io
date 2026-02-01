@@ -60,15 +60,6 @@ export const useThoughtsStore = defineStore('thoughts', () => {
     errorStore.addError(errorTypes.apiError, error)
   }
 
-  // tervezés
-  // jelenleg vannak a publikus gondolatok
-  // ha a user megnyitja majd a saját gondolatait akkor betöltjük a userthoughts-ot
-  // ezzel az a probléma, ha a homeview-ban frissítjük valamelyik gondolatot akkor csak a publikus gondolatok frissülnek
-  // megoldás -> az összes gondolatot egy helyre gyújtjük, ha be van lépve a felh, a saját adatai adjuk vissza
-  // a homeview-ba csak a publikusokat
-  // az egyéni user felületen meg route.param.id (userId) alapján
-  // ha vmi változik akkor csak egy helyen kell frissíteni
-
   function transformReactions(thought, reactionIds) {
     const count = thought.reactions.reduce((acc, reaction) => {
       acc[reaction.id] = reaction.count

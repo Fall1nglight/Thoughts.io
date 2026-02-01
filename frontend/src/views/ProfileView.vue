@@ -64,10 +64,13 @@ watch(
 
         <p class="lead">
           Reactions:
-          <span v-for="reaction in user.stats.reactions" :key="reaction.id">
-            <i :class="reactionTypes[reaction.id]"></i>
-            <span>
-              {{ reaction.count }}
+          <span v-if="!user.stats.reactions.length"> nothing </span>
+          <span v-else>
+            <span v-for="reaction in user.stats.reactions" :key="reaction.id">
+              <i :class="reactionTypes[reaction.id]"></i>
+              <span>
+                {{ reaction.count }}
+              </span>
             </span>
           </span>
         </p>

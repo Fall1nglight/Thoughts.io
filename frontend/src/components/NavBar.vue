@@ -60,14 +60,14 @@ const { user, isLoggedIn, isAdmin } = storeToRefs(authStore)
                 {{ user.username }}
               </RouterLink>
 
+              <RouterLink v-show="isAdmin" to="/admin-dashboard" class="dropdown-item">
+                Admin Dashboard
+              </RouterLink>
+
               <div class="dropdown-divider"></div>
 
               <RouterLink to="/user-settings" class="dropdown-item">Settings</RouterLink>
             </div>
-          </li>
-
-          <li v-show="isAdmin" class="nav-item">
-            <RouterLink to="/admin-dashboard" class="nav-link">Admin Dashboard</RouterLink>
           </li>
 
           <li v-show="isLoggedIn" class="nav-item">
