@@ -1,25 +1,20 @@
-﻿using System.Security.Claims;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using ThoughtsApp.Api.Authentication;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
-using ThoughtsApp.Api.Data.Comments;
 using ThoughtsApp.Api.Data.Shared;
-using ThoughtsApp.Api.Data.Thoughts;
 
-namespace ThoughtsApp.Api.Comments.Endpoints;
+namespace ThoughtsApp.Api.Comments.Endpoints.Admin;
 
-public class DeleteComment : IEndpoint
+public class DeleteCommentAdmin : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder builder)
     {
         builder
             .MapDelete("/{thoughtId}/comments/{commentId}", Handle)
             .WithSummary("Deletes comment by id on thought by id")
-            .WithRequestValidation<Request>()
-            .WithEnsureEntityIsAccessible<Thought, Request>(x => x.ThoughtId);
+            .WithRequestValidation<Request>();
     }
 
     public record Request(Guid ThoughtId, Guid CommentId);
@@ -36,16 +31,11 @@ public class DeleteComment : IEndpoint
     private static async Task<NoContent> Handle(
         [AsParameters] Request request,
         AppDbContext db,
-        ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
     {
         await db
-            .Comments.Where(x =>
-                x.Id == request.CommentId
-                && x.ThoughtId == request.ThoughtId
-                && x.UserId == claimsPrincipal.GetUserId()
-            )
+            .Comments.Where(x => x.Id == request.CommentId && x.ThoughtId == request.ThoughtId)
             .ExecuteDeleteAsync(cancellationToken);
 
         return TypedResults.NoContent();

@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using ThoughtsApp.Api.Authentication;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
-using ThoughtsApp.Api.Data.Comments;
 using ThoughtsApp.Api.Data.Shared;
 using ThoughtsApp.Api.Data.Thoughts;
 

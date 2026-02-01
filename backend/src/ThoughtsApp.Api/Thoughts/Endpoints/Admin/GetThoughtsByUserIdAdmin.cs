@@ -7,9 +7,9 @@ using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Shared;
 
-namespace ThoughtsApp.Api.Thoughts.Endpoints;
+namespace ThoughtsApp.Api.Thoughts.Endpoints.Admin;
 
-public class GetThoughtsByUserId : IEndpoint
+public class GetThoughtsByUserIdAdmin : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder builder)
     {
@@ -30,7 +30,6 @@ public class GetThoughtsByUserId : IEndpoint
     public record Thought(
         Guid Id,
         User User,
-        int? UserReactionId,
         string Title,
         string Content,
         bool IsPublic,
@@ -57,30 +56,12 @@ public class GetThoughtsByUserId : IEndpoint
         CancellationToken cancellationToken
     )
     {
-        Guid? userId = null;
-
-        if (claimsPrincipal.Identity?.IsAuthenticated == true)
-            userId = claimsPrincipal.GetUserId();
-
         var userThoughts = await db
-            .Thoughts.Where(t =>
-                t.UserId == request.UserId
-                && (
-                    userId == null || userId.Value != request.UserId
-                        ? t.IsPublic == true
-                        : t.IsPublic == true || t.IsPublic == false
-                )
-            )
+            .Thoughts.Where(t => t.UserId == request.UserId)
             .AsNoTracking()
             .Select(t => new Thought(
                 t.Id,
                 new User(t.UserId, t.User.Username),
-                userId == null
-                    ? null
-                    : t
-                        .Reactions.Where(tr => tr.UserId == userId.Value)
-                        .Select(tr => tr.Reaction.Id)
-                        .SingleOrDefault(),
                 t.Title,
                 t.Content,
                 t.IsPublic,

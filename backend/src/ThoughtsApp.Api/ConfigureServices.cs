@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Security.Claims;
+using System.Text.Json.Serialization;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -6,6 +7,7 @@ using Serilog;
 using ThoughtsApp.Api.Authentication.Services;
 using ThoughtsApp.Api.Common.ExceptionHandlers;
 using ThoughtsApp.Api.Data.Shared;
+using ThoughtsApp.Api.Data.Users;
 
 namespace ThoughtsApp.Api;
 
@@ -76,10 +78,14 @@ internal static class ConfigureServices
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ClockSkew = TimeSpan.Zero,
+                    RoleClaimType = ClaimTypes.Role,
                 };
             });
 
-        builder.Services.AddAuthorization();
+        builder
+            .Services.AddAuthorizationBuilder()
+            .AddPolicy("AdminOnly", policy => policy.RequireRole(Role.Admin));
+
         builder.Services.Configure<JwtProviderOptions>(
             builder.Configuration.GetSection(optionsName)
         );

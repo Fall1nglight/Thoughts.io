@@ -2,11 +2,14 @@
 using Microsoft.OpenApi.Models;
 using ThoughtsApp.Api.Authentication.Endpoints;
 using ThoughtsApp.Api.Comments.Endpoints;
+using ThoughtsApp.Api.Comments.Endpoints.Admin;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Filters;
 using ThoughtsApp.Api.Reactions.Endpoints;
 using ThoughtsApp.Api.Thoughts.Endpoints;
+using ThoughtsApp.Api.Thoughts.Endpoints.Admin;
 using ThoughtsApp.Api.Users;
+using ThoughtsApp.Api.Users.Admin;
 
 namespace ThoughtsApp.Api;
 
@@ -40,6 +43,7 @@ public static class Endpoints
         endpoints.MapAuthenticationEndpoints();
         endpoints.MapThoughtEndpoints();
         endpoints.MapUserEndpoints();
+        endpoints.MapAdminEndpoints();
     }
 
     /// <summary>
@@ -108,6 +112,39 @@ public static class Endpoints
 
         // authorized user endpoints
         endpoints.MapAuthorizedGroup().MapEndpoint<UpdateUser>().MapEndpoint<DeleteUser>();
+    }
+
+    private static void MapAdminEndpoints(this RouteGroupBuilder builder)
+    {
+        var endpoints = builder.MapAdminOnlyGroup("/admin").WithTags("Admin");
+        var thoughts = endpoints.MapGroup("/thoughts");
+
+        // thoughts
+        thoughts
+            .MapEndpoint<GetThoughtsAdmin>()
+            .MapEndpoint<GetThoughtByIdAdmin>()
+            .MapEndpoint<GetThoughtsByUserIdAdmin>()
+            .MapEndpoint<UpdateThoughtAdmin>();
+
+        // comments
+        thoughts.MapEndpoint<DeleteCommentAdmin>();
+
+        // users
+        endpoints.MapGroup("/users").MapEndpoint<DeleteUserAdmin>();
+    }
+
+    private static RouteGroupBuilder MapAdminOnlyGroup(
+        this RouteGroupBuilder builder,
+        string? prefix = null
+    )
+    {
+        return builder
+            .MapGroup(prefix ?? string.Empty)
+            .RequireAuthorization("AdminOnly")
+            .WithOpenApi(operation => new OpenApiOperation(operation)
+            {
+                Security = [new OpenApiSecurityRequirement { [SecurityScheme] = [] }],
+            });
     }
 
     /// <summary>

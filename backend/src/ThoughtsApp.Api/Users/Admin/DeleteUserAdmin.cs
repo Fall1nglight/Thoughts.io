@@ -8,9 +8,9 @@ using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Shared;
 
-namespace ThoughtsApp.Api.Users;
+namespace ThoughtsApp.Api.Users.Admin;
 
-public class DeleteUser : IEndpoint
+public class DeleteUserAdmin : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder builder)
     {
@@ -33,16 +33,9 @@ public class DeleteUser : IEndpoint
     private static async Task<Results<NoContent, BadRequest<ProblemDetails>>> Handle(
         [AsParameters] Request request,
         AppDbContext db,
-        ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
     {
-        // todo | move this to filter?
-        if (request.Id != claimsPrincipal.GetUserId())
-            return TypedResults.BadRequest(
-                new ProblemDetails { Detail = "You are not authorized to update this user!" }
-            );
-
         await db
             .ThoughtReactions.Where(x => x.UserId == request.Id)
             .ExecuteDeleteAsync(cancellationToken);

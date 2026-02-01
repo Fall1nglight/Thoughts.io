@@ -7,19 +7,19 @@ using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Shared;
 
-namespace ThoughtsApp.Api.Thoughts.Endpoints;
+namespace ThoughtsApp.Api.Thoughts.Endpoints.Admin;
 
-public class GetThoughtsByUserId : IEndpoint
+public class GetThoughtByIdAdmin : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder builder)
     {
         builder
-            .MapGet("/user/{userId}", Handle)
-            .WithSummary("Gets thoughts by userId")
+            .MapGet("/{id}", Handle)
+            .WithSummary("Gets thought by id")
             .WithRequestValidation<Request>();
     }
 
-    public record Request(Guid UserId);
+    public record Request(Guid Id);
 
     public record User(Guid Id, string Username);
 
@@ -30,7 +30,6 @@ public class GetThoughtsByUserId : IEndpoint
     public record Thought(
         Guid Id,
         User User,
-        int? UserReactionId,
         string Title,
         string Content,
         bool IsPublic,
@@ -40,47 +39,29 @@ public class GetThoughtsByUserId : IEndpoint
         DateTime UpdatedAtUtc
     );
 
-    public record Response(List<Thought> Thoughts);
+    public record Response(Thought Thought);
 
     public class RequestValidator : AbstractValidator<Request>
     {
         public RequestValidator()
         {
-            RuleFor(x => x.UserId).NotEmpty().WithMessage("{PropertyName} is required.");
+            RuleFor(x => x.Id).NotEmpty().WithMessage("{PropertyName} is required.");
         }
     }
 
-    private static async Task<Ok<Response>> Handle(
+    private static async Task<Results<Ok<Response>, NotFound>> Handle(
         [AsParameters] Request request,
         AppDbContext db,
         ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
     {
-        Guid? userId = null;
-
-        if (claimsPrincipal.Identity?.IsAuthenticated == true)
-            userId = claimsPrincipal.GetUserId();
-
-        var userThoughts = await db
-            .Thoughts.Where(t =>
-                t.UserId == request.UserId
-                && (
-                    userId == null || userId.Value != request.UserId
-                        ? t.IsPublic == true
-                        : t.IsPublic == true || t.IsPublic == false
-                )
-            )
+        var thought = await db
+            .Thoughts.Where(x => x.Id == request.Id)
             .AsNoTracking()
             .Select(t => new Thought(
                 t.Id,
                 new User(t.UserId, t.User.Username),
-                userId == null
-                    ? null
-                    : t
-                        .Reactions.Where(tr => tr.UserId == userId.Value)
-                        .Select(tr => tr.Reaction.Id)
-                        .SingleOrDefault(),
                 t.Title,
                 t.Content,
                 t.IsPublic,
@@ -91,9 +72,12 @@ public class GetThoughtsByUserId : IEndpoint
                 t.CreatedAtUtc,
                 t.UpdatedAtUtc
             ))
-            .ToListAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
 
-        var response = new Response(userThoughts);
+        if (thought == null)
+            return TypedResults.NotFound();
+
+        var response = new Response(thought);
 
         return TypedResults.Ok(response);
     }
