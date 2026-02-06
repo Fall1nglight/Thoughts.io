@@ -123,8 +123,4 @@ watch(focusedThought, async (newVal) => {
   </div>
 </template>
 
-<style scoped>
-.active {
-  color: navajowhite;
-}
-</style>
+<style scoped></style>

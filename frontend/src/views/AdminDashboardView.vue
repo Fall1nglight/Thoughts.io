@@ -11,11 +11,15 @@ const tabs = {
   statistics: Statistics,
 }
 
-const selectedTab = shallowRef(null)
+const selectedTab = shallowRef(tabs.thoughts)
 
 // Methods
 function selectTab(tab) {
   selectedTab.value = tab
+}
+
+function isActiveTab(tab) {
+  return selectedTab.value === tab
 }
 </script>
 
@@ -26,40 +30,33 @@ function selectTab(tab) {
         <h1>Admin dashboard</h1>
       </div>
 
-      <div class="col-md-5">
-        <div class="dropdown">
-          <a
-            class="btn btn-secondary dropdown-toggle"
-            href="#"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Menu
-          </a>
+      <div class="col-md-10">
+        <button
+          @click="selectTab(tabs.thoughts)"
+          type="button"
+          class="btn btn-secondary"
+          :class="{ active: isActiveTab(tabs.thoughts) }"
+        >
+          Manage thoughts
+        </button>
 
-          <ul class="dropdown-menu">
-            <li>
-              <a class="dropdown-item" type="button" @click="selectTab(tabs.thoughts)">
-                Manage Thoughts
-              </a>
-            </li>
+        <button
+          @click="selectTab(tabs.users)"
+          type="button"
+          class="btn btn-secondary"
+          :class="{ active: isActiveTab(tabs.users) }"
+        >
+          Manage users
+        </button>
 
-            <li>
-              <a class="dropdown-item" type="button" @click="selectTab(tabs.users)">
-                Manage Users
-              </a>
-            </li>
-
-            <li><hr class="dropdown-divider" /></li>
-
-            <li>
-              <a class="dropdown-item" type="button" @click="selectTab(tabs.statistics)">
-                Open statistics
-              </a>
-            </li>
-          </ul>
-        </div>
+        <button
+          @click="selectTab(tabs.statistics)"
+          type="button"
+          class="btn btn-secondary"
+          :class="{ active: isActiveTab(tabs.statistics) }"
+        >
+          View statistics
+        </button>
       </div>
     </div>
   </section>
@@ -68,12 +65,7 @@ function selectTab(tab) {
 </template>
 
 <style scoped>
-* {
+h1 {
   color: white;
-}
-
-.dropdown-toggle,
-.dropdown-item {
-  color: black;
 }
 </style>

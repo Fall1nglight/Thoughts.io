@@ -124,10 +124,13 @@ public static class Endpoints
             .MapEndpoint<GetThoughtsAdmin>()
             .MapEndpoint<GetThoughtByIdAdmin>()
             .MapEndpoint<GetThoughtsByUserIdAdmin>()
-            .MapEndpoint<UpdateThoughtAdmin>();
+            .MapEndpoint<GetThoughtsByTitleAdmin>()
+            .MapEndpoint<GetThoughtsByUsername>()
+            .MapEndpoint<UpdateThoughtAdmin>()
+            .MapEndpoint<DeleteThoughtAdmin>();
 
         // comments
-        thoughts.MapEndpoint<DeleteCommentAdmin>();
+        thoughts.MapEndpoint<DeleteCommentAdmin>().MapEndpoint<GetCommentsAdmin>();
 
         // users
         endpoints.MapGroup("/users").MapEndpoint<DeleteUserAdmin>();

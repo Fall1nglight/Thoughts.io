@@ -28,6 +28,7 @@ function isActiveForm(form) {
 <template>
   <div class="row p-5">
     <h1>Settings</h1>
+
     <div class="col">
       <button
         @click="toggleForm(forms.username)"

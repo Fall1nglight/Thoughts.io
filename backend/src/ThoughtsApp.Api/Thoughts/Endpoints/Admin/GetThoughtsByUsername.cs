@@ -1,16 +1,24 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using System.Security.Claims;
+using FluentValidation;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using ThoughtsApp.Api.Common;
+using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Shared;
 
 namespace ThoughtsApp.Api.Thoughts.Endpoints.Admin;
 
-public class GetThoughtsAdmin : IEndpoint
+public class GetThoughtsByUsername : IEndpoint
 {
     public static void Map(IEndpointRouteBuilder builder)
     {
-        builder.MapGet("", Handle).WithSummary("Gets every single thought");
+        builder
+            .MapGet("/username/{username}", Handle)
+            .WithSummary("Gets thoughts by username")
+            .WithRequestValidation<Request>();
     }
+
+    public record Request(string Username);
 
     public record User(Guid Id, string Username);
 
@@ -32,13 +40,34 @@ public class GetThoughtsAdmin : IEndpoint
 
     public record Response(List<Thought> Thoughts);
 
+    public class RequestValidator : AbstractValidator<Request>
+    {
+        public RequestValidator()
+        {
+            RuleFor(x => x.Username)
+                .NotEmpty()
+                .WithMessage("Username is required.")
+                .MinimumLength(3)
+                .WithMessage("Username must be at least {MinLength} characters long.")
+                .MaximumLength(30)
+                .WithMessage("Username must not exceed {MaxLength} characters.")
+                .Matches("^[a-zA-Z0-9_]*$")
+                .WithMessage(
+                    "Username can only contain letters, numbers, and underscores (no spaces)."
+                );
+        }
+    }
+
     private static async Task<Ok<Response>> Handle(
+        [AsParameters] Request request,
         AppDbContext db,
+        ClaimsPrincipal claimsPrincipal,
         CancellationToken cancellationToken
     )
     {
-        var publicThoughts = await db
-            .Thoughts.AsNoTracking()
+        var userThoughts = await db
+            .Thoughts.Where(t => t.User.Username.ToLower() == request.Username.ToLower())
+            .AsNoTracking()
             .Select(t => new Thought(
                 t.Id,
                 new User(t.UserId, t.User.Username),
@@ -54,7 +83,7 @@ public class GetThoughtsAdmin : IEndpoint
             ))
             .ToListAsync(cancellationToken);
 
-        var response = new Response(publicThoughts);
+        var response = new Response(userThoughts);
 
         return TypedResults.Ok(response);
     }
