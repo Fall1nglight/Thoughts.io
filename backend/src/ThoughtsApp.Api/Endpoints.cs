@@ -133,7 +133,11 @@ public static class Endpoints
         thoughts.MapEndpoint<DeleteCommentAdmin>().MapEndpoint<GetCommentsAdmin>();
 
         // users
-        endpoints.MapGroup("/users").MapEndpoint<DeleteUserAdmin>();
+        endpoints
+            .MapGroup("/users")
+            .MapEndpoint<GetUsersAdmin>()
+            .MapEndpoint<GetUserByUsernameAdmin>()
+            .MapEndpoint<DeleteUserAdmin>();
     }
 
     private static RouteGroupBuilder MapAdminOnlyGroup(

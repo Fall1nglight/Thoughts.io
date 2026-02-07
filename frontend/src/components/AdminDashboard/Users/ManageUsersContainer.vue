@@ -1,76 +1,59 @@
 ﻿<script setup>
 import { computed, h, ref } from 'vue'
+import { format } from 'date-fns'
+import { storeToRefs } from 'pinia'
 import {
+  createColumnHelper,
   FlexRender,
   getCoreRowModel,
   getPaginationRowModel,
   useVueTable,
-  createColumnHelper,
 } from '@tanstack/vue-table'
-import { format } from 'date-fns'
-import { useAdminThoughtsStore } from '@/stores/adminThoughts.js'
-import { storeToRefs } from 'pinia'
-import ActionsButton from '@/components/AdminDashboard/ActionsButton.vue'
+import { useAdminUserStore } from '@/stores/adminUsers.js'
+import UserActionButton from '@/components/AdminDashboard/Users/UserActionButton.vue'
+import { useAuthStore } from '@/stores/auth.js'
 
 // Dependencies
-const adminThoughts = useAdminThoughtsStore()
-const { getThoughtsBySearch, focusedThought } = storeToRefs(adminThoughts)
+const adminUsers = useAdminUserStore()
+const authStore = useAuthStore()
+const { getUsersBySearch } = storeToRefs(adminUsers)
+const { getUserId } = storeToRefs(authStore)
 
 // Local state
-
-// search
 const searchByOptions = {
-  title: 'title',
-  content: 'content',
   username: 'username',
 }
 const searchQuery = ref('')
-const searchBy = ref(searchByOptions.title)
-const filteredThoughts = computed(() => {
-  if (searchBy.value === searchByOptions.title)
-    return getThoughtsBySearch.value.filter((x) =>
-      x.title.toLowerCase().includes(searchQuery.value.toLowerCase()),
-    )
-
-  if (searchBy.value === searchByOptions.content)
-    return getThoughtsBySearch.value.filter((x) =>
-      x.content.toLowerCase().includes(searchQuery.value.toLowerCase()),
-    )
-
+const searchBy = ref(searchByOptions.username)
+const filteredUsers = computed(() => {
   if (searchBy.value === searchByOptions.username)
-    return getThoughtsBySearch.value.filter((x) =>
-      x.user.username.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    return getUsersBySearch.value.filter((x) =>
+      x.username.toLowerCase().includes(searchQuery.value.toLowerCase()),
     )
 
-  return getThoughtsBySearch.value
+  return getUsersBySearch.value
 })
 
 const columnHelper = createColumnHelper()
 const columnVisibility = ref({
   id: false,
-  user_id: false,
-  createdAtUtc: false,
-  updatedAtUtc: false,
 })
+
 const INITIAL_PAGE_INDEX = 0
 const goToPageNumber = ref(INITIAL_PAGE_INDEX + 1)
 const pageSizes = [1, 2, 3, 5, 10, 20, 30, 40, 50]
 
 const columns = [
-  columnHelper.accessor('id', {
-    header: () => 'Thought_Id',
-    cell: (info) => info.getValue(),
-  }),
-
   columnHelper.group({
-    header: 'Author',
+    header: 'Details',
     columns: [
-      columnHelper.accessor('user.id', {
+      columnHelper.accessor('id', {
         header: () => 'User_Id',
+        // todo | make this a router link?
         cell: (info) => info.getValue(),
       }),
 
-      columnHelper.accessor('user.username', {
+      columnHelper.accessor('username', {
         header: () => 'Username',
         cell: (info) => info.getValue(),
       }),
@@ -78,34 +61,21 @@ const columns = [
   }),
 
   columnHelper.group({
-    header: 'Content',
+    header: 'Stats',
     columns: [
-      columnHelper.accessor('title', {
+      columnHelper.accessor('stats.thoughts.count', {
+        header: () => 'Thoughts',
         cell: (info) => info.getValue(),
       }),
 
-      columnHelper.accessor('content', {
-        cell: (info) => info.getValue(),
-      }),
-
-      columnHelper.accessor('isPublic', {
-        header: () => 'Visibility',
-        cell: (info) => (info.getValue() ? 'Public' : 'Private'),
-      }),
-    ],
-  }),
-
-  columnHelper.group({
-    header: 'Interactions',
-    columns: [
-      columnHelper.accessor('comments.count', {
-        cell: (info) => info.getValue(),
+      columnHelper.accessor('stats.comments.count', {
         header: () => 'Comments',
+        cell: (info) => info.getValue(),
       }),
 
-      columnHelper.accessor('reactions', {
-        cell: (info) => info.getValue().reduce((acc, curr) => (acc += curr.count), 0),
+      columnHelper.accessor('stats.reactions', {
         header: () => 'Reactions',
+        cell: (info) => info.getValue().reduce((acc, curr) => (acc += curr.count), 0),
       }),
     ],
   }),
@@ -117,14 +87,6 @@ const columns = [
         header: () => 'Created',
         cell: (info) => format(info.getValue() + 'Z', 'yyyy.MM.dd (HH:mm:ss)'),
       }),
-
-      columnHelper.accessor('updatedAtUtc', {
-        header: () => 'Updated',
-        cell: (info) =>
-          new Date(info.getValue()).getUTCFullYear() > 1
-            ? format(info.getValue() + 'Z', 'yyyy.MM.dd (HH:mm:ss)')
-            : 'Never',
-      }),
     ],
   }),
 
@@ -132,17 +94,15 @@ const columns = [
     id: 'actions',
     header: () => 'Actions',
     cell: (info) =>
-      h(ActionsButton, {
+      h(UserActionButton, {
         onDelete: () => handleDelete(info.row.original.id),
-        onMakePrivate: () => toggleVisibility(info.row.original.id, false),
-        onMakePublic: () => toggleVisibility(info.row.original.id, true),
-        onShowComments: () => showComments(info.row.original.id),
       }),
   }),
 ]
+
 const table = useVueTable({
   get data() {
-    return filteredThoughts.value
+    return filteredUsers.value
   },
 
   state: {
@@ -174,29 +134,22 @@ function handlePageSizeChange(e) {
   table.setPageSize(Number(e.target.value))
 }
 
-async function toggleVisibility(id, visibility) {
-  try {
-    await adminThoughts.updateThought(id, visibility)
-  } catch (error) {
-    console.error(error)
-  }
-}
-
 async function handleDelete(id) {
   try {
-    await adminThoughts.deleteThought(id)
+    if (getUserId.value === id) {
+      alert('You cannot delete your own account from the dashboard.')
+      return
+    }
+
+    await adminUsers.deleteUser(id)
   } catch (error) {
     console.error(error)
   }
-}
-
-function showComments(id) {
-  focusedThought.value = getThoughtsBySearch.value.find((x) => x.id === id)
 }
 </script>
 
 <template>
-  <div class="row mt-5" v-if="!filteredThoughts.length">
+  <div class="row mt-5" v-if="!getUsersBySearch.length">
     <p class="lead">No data</p>
   </div>
 
@@ -240,8 +193,6 @@ function showComments(id) {
         </div>
 
         <select class="form-select" v-model="searchBy">
-          <option :value="searchByOptions.title">Search by title</option>
-          <option :value="searchByOptions.content">Search by content</option>
           <option :value="searchByOptions.username">Search by username</option>
         </select>
       </div>
@@ -342,14 +293,6 @@ function showComments(id) {
           </option>
         </select>
       </div>
-    </div>
-
-    <div class="col-12">
-      asd
-      <br />
-      asd
-      <br />
-      asd
     </div>
   </div>
 </template>

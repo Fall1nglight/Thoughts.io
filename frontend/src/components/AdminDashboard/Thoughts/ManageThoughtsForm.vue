@@ -16,6 +16,10 @@ const searchQuery = ref(searchParams.value.query || '')
 async function handleSubmit() {
   try {
     searchParams.value.method = searchOption.value
+
+    // reset the form, if we load every thought
+    if (searchOption.value === searchMethods.all) searchQuery.value = ''
+
     searchParams.value.query = searchQuery.value
     await adminThoughts.fetchThoughtsV2()
   } catch (error) {

@@ -1,6 +1,6 @@
 ﻿<script setup>
-import ManageThoughtsForm from '@/components/AdminDashboard/ManageThoughtsForm.vue'
-import ManageThoughtsContainer from '@/components/AdminDashboard/ManageThoughtsContainer.vue'
+import ManageThoughtsForm from '@/components/AdminDashboard/Thoughts/ManageThoughtsForm.vue'
+import ManageThoughtsContainer from '@/components/AdminDashboard/Thoughts/ManageThoughtsContainer.vue'
 </script>
 
 <template>
@@ -12,7 +12,6 @@ import ManageThoughtsContainer from '@/components/AdminDashboard/ManageThoughtsC
     </div>
 
     <ManageThoughtsForm></ManageThoughtsForm>
-
     <ManageThoughtsContainer></ManageThoughtsContainer>
   </section>
 </template>

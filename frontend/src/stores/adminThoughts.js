@@ -73,8 +73,6 @@ export const useAdminThoughtsStore = defineStore('adminThoughts', () => {
   }
 
   // actions
-
-  // fetch
   async function fetchThoughtsV2() {
     try {
       const method = searchParams.value.method

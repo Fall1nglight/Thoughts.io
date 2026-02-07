@@ -1,8 +1,8 @@
 ﻿<script setup>
 import { shallowRef } from 'vue'
-import ManageThoughts from '@/components/AdminDashboard/ManageThoughts.vue'
-import ManageUsers from '@/components/AdminDashboard/ManageUsers.vue'
-import Statistics from '@/components/AdminDashboard/Statistics.vue'
+import ManageThoughts from '@/components/AdminDashboard/Thoughts/ManageThoughts.vue'
+import ManageUsers from '@/components/AdminDashboard/Users/ManageUsers.vue'
+import Statistics from '@/components/AdminDashboard/Statistics/Statistics.vue'
 
 // Local state
 const tabs = {
