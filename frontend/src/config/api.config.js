@@ -4,3 +4,5 @@ export const thoughtsUri = baseUri + '/thoughts'
 export const usersUri = baseUri + '/users'
 
 export const adminUri = baseUri + '/admin'
+
+export const statsUri = baseUri + '/stats'

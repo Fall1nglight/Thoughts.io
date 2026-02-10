@@ -19,7 +19,7 @@ public class GetUserGrowthStats : IEndpoint
 
     public record Request(int Days = 30);
 
-    public record DataPoint(DateTime UtcDate, int Count);
+    public record DataPoint(DateTime DateUtc, int Count);
 
     public record Response(List<DataPoint> Registrations);
 
@@ -27,7 +27,9 @@ public class GetUserGrowthStats : IEndpoint
     {
         public RequestValidator()
         {
-            RuleFor(x => x.Days).InclusiveBetween(1, 365);
+            RuleFor(x => x.Days)
+                .InclusiveBetween(1, 365)
+                .WithMessage("{PropertyName} must be between {From} and {To}.");
         }
     }
 

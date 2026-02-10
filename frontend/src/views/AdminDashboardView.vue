@@ -24,13 +24,13 @@ function isActiveTab(tab) {
 </script>
 
 <template>
-  <section class="admin-dashboard p-5">
+  <section class="admin-dashboard py-5">
     <div class="row">
       <div class="col-12 text-center">
         <h1>Admin dashboard</h1>
       </div>
 
-      <div class="col-md-10">
+      <div class="col-md-12 text-center mt-3">
         <button
           @click="selectTab(tabs.thoughts)"
           type="button"

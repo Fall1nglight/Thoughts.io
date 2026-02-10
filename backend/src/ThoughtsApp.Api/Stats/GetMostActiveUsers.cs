@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography.Xml;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using ThoughtsApp.Api.Common;
@@ -7,6 +6,8 @@ using ThoughtsApp.Api.Common.Extensions;
 using ThoughtsApp.Api.Data.Shared;
 
 namespace ThoughtsApp.Api.Stats;
+
+// todo | add sortBy here as well
 
 public class GetMostActiveUsers : IEndpoint
 {

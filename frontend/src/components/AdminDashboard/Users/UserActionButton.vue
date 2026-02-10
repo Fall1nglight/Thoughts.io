@@ -10,7 +10,7 @@ function handleDelete() {
 
 <template>
   <button class="btn btn-outline-danger btn-sm" title="Delete" @click="handleDelete">
-    <i class="fa-solid fa-lock-open"></i>
+    <i class="fa-solid fa-trash-can"></i>
   </button>
 </template>
 
