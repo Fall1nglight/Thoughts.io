@@ -6,6 +6,7 @@ using ThoughtsApp.Api.Comments.Endpoints.Admin;
 using ThoughtsApp.Api.Common;
 using ThoughtsApp.Api.Common.Filters;
 using ThoughtsApp.Api.Reactions.Endpoints;
+using ThoughtsApp.Api.Stats;
 using ThoughtsApp.Api.Thoughts.Endpoints;
 using ThoughtsApp.Api.Thoughts.Endpoints.Admin;
 using ThoughtsApp.Api.Users;
@@ -44,6 +45,7 @@ public static class Endpoints
         endpoints.MapThoughtEndpoints();
         endpoints.MapUserEndpoints();
         endpoints.MapAdminEndpoints();
+        endpoints.MapStatEndpoints();
     }
 
     /// <summary>
@@ -138,6 +140,25 @@ public static class Endpoints
             .MapEndpoint<GetUsersAdmin>()
             .MapEndpoint<GetUserByUsernameAdmin>()
             .MapEndpoint<DeleteUserAdmin>();
+    }
+
+    private static void MapStatEndpoints(this RouteGroupBuilder builder)
+    {
+        var endpoints = builder.MapAdminOnlyGroup("/stats").WithTags("Stats");
+        endpoints.MapEndpoint<GetContentDistributionStats>();
+
+        // users
+        var users = endpoints.MapGroup("/users");
+        users.MapEndpoint<GetUserGrowthStats>().MapEndpoint<GetMostActiveUsers>();
+
+        // thoughts
+        var thoughts = endpoints.MapGroup("/thoughts");
+        thoughts.MapEndpoint<GetThoughtActivityStats>();
+        thoughts.MapEndpoint<GetMostPopularThoughts>();
+
+        // reactions
+        var reactions = endpoints.MapGroup("/reactions");
+        reactions.MapEndpoint<GetReactionDistributionStats>();
     }
 
     private static RouteGroupBuilder MapAdminOnlyGroup(

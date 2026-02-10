@@ -26,8 +26,14 @@ const user = ref({
 // Methods
 const handleSubmit = async () => {
   try {
+    const payload = {
+      email: user.value.email,
+      username: user.value.username,
+      password: user.value.password,
+    }
+
     await schemas.auth.signup.validateAsync(user.value)
-    await authStore.signup(user.value)
+    await authStore.signup(payload)
 
     if (!isLoggedIn.value) return
 
