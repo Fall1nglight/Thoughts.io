@@ -1,6 +1,7 @@
 ﻿<script setup>
 import DistributionStats from '@/components/AdminDashboard/Statistics/DistributionStats.vue'
-import ActivityStats from '@/components/AdminDashboard/Statistics/ActivityStats.vue'
+import UserGrowthStats from '@/components/AdminDashboard/Statistics/UserGrowthStats.vue'
+import ThoughtActivityStats from '@/components/AdminDashboard/Statistics/ThoughtActivityStats.vue'
 import UserLeaderboard from '@/components/AdminDashboard/Statistics/UserLeaderboard.vue'
 import ThoughtPopularity from '@/components/AdminDashboard/Statistics/ThoughtPopularity.vue'
 import { onMounted } from 'vue'
@@ -18,9 +19,14 @@ const tabs = {
     component: DistributionStats,
   },
 
-  activity: {
-    displayName: 'Activity',
-    component: ActivityStats,
+  userGrowth: {
+    displayName: 'User Growth',
+    component: UserGrowthStats,
+  },
+
+  thoughtActivity: {
+    displayName: 'Thought activity',
+    component: ThoughtActivityStats,
   },
 
   userLeaderboard: {
@@ -36,12 +42,12 @@ const tabs = {
 
 // Hooks and watchers
 onMounted(() => {
-  if (!selectedTab.value) selectedTab.value = tabs.distribution.component
+  if (!selectedTab.value) selectedTab.value = tabs.userGrowth.component
 })
 </script>
 
 <template>
-  <section class="statistics">
+  <section class="statistics pt-5">
     <div class="row">
       <div class="col-12">
         <p class="lead">Statistics</p>

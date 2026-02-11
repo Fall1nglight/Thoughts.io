@@ -4,7 +4,7 @@ import ManageUsersContainer from '@/components/AdminDashboard/Users/ManageUsersC
 </script>
 
 <template>
-  <section class="user-manager">
+  <section class="user-manager pt-5">
     <div class="row">
       <div class="col-12">
         <p class="lead">Users</p>

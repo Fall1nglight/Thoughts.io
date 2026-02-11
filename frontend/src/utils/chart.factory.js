@@ -1,10 +1,22 @@
-﻿export function createPieChart(labelValues, backgroundColorValues, dataValues) {
+﻿export function createPieChartData(label, backgroundColor, data) {
   return {
-    labels: labelValues,
+    labels: label,
     datasets: [
       {
-        backgroundColor: backgroundColorValues,
-        data: dataValues,
+        backgroundColor: backgroundColor,
+        data: data,
+      },
+    ],
+  }
+}
+
+export function createTimeSeriesChartData(yAxisLabel, points, datasetOptions) {
+  return {
+    datasets: [
+      {
+        label: yAxisLabel,
+        data: points,
+        ...datasetOptions,
       },
     ],
   }

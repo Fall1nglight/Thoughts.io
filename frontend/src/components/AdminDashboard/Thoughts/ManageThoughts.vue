@@ -4,7 +4,7 @@ import ManageThoughtsContainer from '@/components/AdminDashboard/Thoughts/Manage
 </script>
 
 <template>
-  <section class="thoughts-manager">
+  <section class="thoughts-manager pt-5">
     <div class="row">
       <div class="col-12">
         <p class="lead">Thoughts</p>

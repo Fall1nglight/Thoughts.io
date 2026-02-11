@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
 import { useAdminStats } from '@/stores/adminStats.js'
-import { createPieChart } from '@/utils/chart.factory.js'
+import { createPieChartData } from '@/utils/chart.factory.js'
 import { colors, commonOptions } from '@/config/chart.options.js'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
@@ -22,14 +22,14 @@ const contentChartData = computed(() => {
   const labels = ['Thoughts', 'Comments']
   const values = [distribution.value.content.thoughtCount, distribution.value.content.commentCount]
 
-  return createPieChart(labels, contentChartColors, values)
+  return createPieChartData(labels, contentChartColors, values)
 })
 
 const reactionChartData = computed(() => {
   const labels = distribution.value.reactions.map((x) => x.name)
   const values = distribution.value.reactions.map((x) => x.count)
 
-  return createPieChart(labels, reactionChartColors, values)
+  return createPieChartData(labels, reactionChartColors, values)
 })
 
 // Hooks and watchers
@@ -43,7 +43,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="row py-5">
+  <div class="row pt-5">
     <div class="col-12">
       <p class="lead">Content distribution</p>
     </div>
@@ -53,7 +53,7 @@ onMounted(async () => {
     </div>
   </div>
 
-  <div class="row">
+  <div class="row pt-5">
     <div class="col-12">
       <p class="lead">Reaction distribution</p>
     </div>
