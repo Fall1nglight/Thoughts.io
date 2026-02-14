@@ -39,7 +39,7 @@ public class GetUserGrowthStats : IEndpoint
         CancellationToken cancellationToken
     )
     {
-        var cutOffDate = DateTime.UtcNow.AddDays(-request.Days);
+        var cutOffDate = DateTime.UtcNow.Date.AddDays(-request.Days);
         var growthStats = await db
             .Users.Where(x => x.CreatedAtUtc >= cutOffDate)
             .GroupBy(x => x.CreatedAtUtc.Date)

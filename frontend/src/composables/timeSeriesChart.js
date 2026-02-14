@@ -7,15 +7,15 @@ import { timeScaleOptions } from '@/config/chart.options.js'
 export function useTimeSeriesChart(apiData, yAxisLabel, tooltipText, datesetOptions) {
   const selectedViewMode = ref(dateViewTypes.auto.value)
 
-  const tooltipFormats = {
-    [dateViewTypes.days.value]: 'yyyy. MM. dd',
-    [dateViewTypes.weeks.value]: 'yyyy. MM. dd',
-    [dateViewTypes.months.value]: 'yyyy. MM',
-    [dateViewTypes.years.value]: 'yyyy',
-  }
-
   function getTooltipFormatByViewMode(viewMode) {
-    return tooltipFormats[viewMode] || 'yyyy. MM. dd'
+    const formats = {
+      [dateViewTypes.days.value]: 'yyyy. MM. dd',
+      [dateViewTypes.weeks.value]: 'yyyy. MM. dd',
+      [dateViewTypes.months.value]: 'yyyy. MM',
+      [dateViewTypes.years.value]: 'yyyy',
+    }
+
+    return formats[viewMode] || 'yyyy. MM. dd'
   }
 
   // if viewMode is set to 'auto', it calculates the optimal viewMode by determineDefaultView()
@@ -26,12 +26,16 @@ export function useTimeSeriesChart(apiData, yAxisLabel, tooltipText, datesetOpti
   })
 
   const chartData = computed(() => {
+    // returns {x|y} values from dates grouped by the viewMode
     const points = groupDates(apiData.value, calculatedViewMode.value).map((group) => ({
       x: group.date,
       y: group.count,
     }))
 
-    return createTimeSeriesChartData(yAxisLabel, points, datesetOptions)
+    const updatedOptions = { ...datesetOptions }
+    if (points.length > 90) updatedOptions.pointRadius = 0
+
+    return createTimeSeriesChartData(yAxisLabel, points, updatedOptions)
   })
 
   const chartOptions = computed(() => {

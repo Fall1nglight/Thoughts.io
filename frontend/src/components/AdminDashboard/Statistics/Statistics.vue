@@ -42,7 +42,7 @@ const tabs = {
 
 // Hooks and watchers
 onMounted(() => {
-  if (!selectedTab.value) selectedTab.value = tabs.userGrowth.component
+  if (!selectedTab.value) selectedTab.value = tabs.userLeaderboard.component
 })
 </script>
 

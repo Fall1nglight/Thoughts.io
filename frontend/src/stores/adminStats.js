@@ -37,12 +37,23 @@ export const useAdminStats = defineStore('adminStats', () => {
 
   const growth = ref({
     users: [],
+    userDateRange: [],
     thoughts: [],
+    thoughtDateRange: [],
   })
 
   const rankings = ref({
     users: [],
+    userQuery: {
+      sortBy: null,
+      limit: null,
+    },
+
     thoughts: [],
+    thoughtQuery: {
+      sortBy: null,
+      limit: null,
+    },
   })
 
   const selectedTab = shallowRef(null)

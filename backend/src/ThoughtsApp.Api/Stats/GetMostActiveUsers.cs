@@ -14,7 +14,7 @@ public class GetMostActiveUsers : IEndpoint
     public static void Map(IEndpointRouteBuilder builder)
     {
         builder
-            .Map("/leaderboard", Handle)
+            .MapGet("/leaderboard", Handle)
             .WithSummary("Get most active users")
             .WithRequestValidation<Request>();
     }
@@ -25,7 +25,7 @@ public class GetMostActiveUsers : IEndpoint
 
     public record Stats(int ThoughtCount, int CommentCount, List<Reaction> Reactions);
 
-    public record User(Guid Id, string Username, Stats Stats);
+    public record User(Guid Id, string Username, DateTime CreatedAtUtc, Stats Stats);
 
     public record Response(List<User> Users);
 
@@ -51,6 +51,7 @@ public class GetMostActiveUsers : IEndpoint
             .Select(x => new User(
                 x.Id,
                 x.Username,
+                x.CreatedAtUtc,
                 new Stats(
                     x.Thoughts.Count,
                     x.Comments.Count,

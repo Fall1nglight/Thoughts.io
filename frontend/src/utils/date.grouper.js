@@ -43,7 +43,7 @@ function getGroupKeyByViewMode(date, viewMode) {
 
 export function determineDefaultView(dataLength) {
   if (dataLength > 365 * 2) return dateViewTypes.years.value
-  if (dataLength > 90) return dateViewTypes.months.value
-  if (dataLength > 30) return dateViewTypes.weeks.value
+  if (dataLength > 180) return dateViewTypes.months.value
+  if (dataLength > 60) return dateViewTypes.weeks.value
   return dateViewTypes.days.value
 }

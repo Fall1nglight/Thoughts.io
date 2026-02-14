@@ -31,7 +31,7 @@ export const timeScaleOptions = {
       ticks: {
         autoSkip: true,
         maxRotation: 0,
-        source: 'data',
+        source: 'auto',
       },
     },
 

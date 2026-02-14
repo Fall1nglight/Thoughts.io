@@ -19,7 +19,7 @@ public class GetThoughtActivityStats : IEndpoint
 
     public record Request(int Days = 30);
 
-    public record DataPoint(DateTime UtcDate, int Count);
+    public record DataPoint(DateTime DateUtc, int Count);
 
     public record Response(List<DataPoint> Creations);
 
@@ -39,7 +39,8 @@ public class GetThoughtActivityStats : IEndpoint
         CancellationToken cancellationToken
     )
     {
-        var cutOffDate = DateTime.UtcNow.AddDays(-request.Days);
+        var cutOffDate = DateTime.UtcNow.Date.AddDays(-request.Days);
+
         var growthStats = await db
             .Thoughts.Where(x => x.CreatedAtUtc >= cutOffDate)
             .GroupBy(x => x.CreatedAtUtc.Date)
