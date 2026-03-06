@@ -195,7 +195,7 @@ watch(focusedThought, async (newVal) => {
           </div>
 
           <!-- Pagination -->
-          <div class="col-12 d-flex flex-column">
+          <div class="col-12 d-flex flex-column d-none">
             <div
               class="page-arrow-navigation d-flex align-items-center justify-content-center flex-grow-1"
               style="flex-basis: 0"

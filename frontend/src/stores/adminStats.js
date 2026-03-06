@@ -1,10 +1,11 @@
-﻿import { defineStore, storeToRefs } from 'pinia'
+﻿import { ref, shallowRef } from 'vue'
+import { defineStore, storeToRefs } from 'pinia'
+import axios from 'axios'
 import { useErrorStore } from '@/stores/error.js'
 import { useAuthStore } from '@/stores/auth.js'
-import axios from 'axios'
 import { statsUri } from '@/config/api.config.js'
 import errorTypes from '@/types/error.types.js'
-import { ref, shallowRef } from 'vue'
+import { statSortTypes } from '@/types/sort.types.js'
 
 export const useAdminStats = defineStore('adminStats', () => {
   // other stores
@@ -45,17 +46,16 @@ export const useAdminStats = defineStore('adminStats', () => {
   const rankings = ref({
     users: [],
     userQuery: {
-      sortBy: null,
-      limit: null,
+      sortBy: statSortTypes.sortByOptions[0],
+      limit: statSortTypes.limitOptions[2],
     },
 
     thoughts: [],
     thoughtQuery: {
-      sortBy: null,
-      limit: null,
+      sortBy: statSortTypes.sortByOptions[0],
+      limit: statSortTypes.limitOptions[2],
     },
   })
-
   const selectedTab = shallowRef(null)
 
   // getters

@@ -7,16 +7,16 @@ import {
   useVueTable,
   createColumnHelper,
 } from '@tanstack/vue-table'
-import { format } from 'date-fns'
 import { useAdminThoughtsStore } from '@/stores/adminThoughts.js'
 import { storeToRefs } from 'pinia'
 import ThoughtActionButtons from '@/components/AdminDashboard/Thoughts/ThoughtActionButtons.vue'
+import TablePagination from '@/components/Table/TablePagination.vue'
+import { getManageThoughtColumns } from '@/types/tableColumns/manageThoughtColumns.js'
+import TableColumnVisibility from '@/components/Table/TableColumnVisibility.vue'
 
 // Dependencies
 const adminThoughts = useAdminThoughtsStore()
 const { getThoughtsBySearch, focusedThought } = storeToRefs(adminThoughts)
-
-// Local state
 
 // search
 const searchByOptions = {
@@ -52,82 +52,9 @@ const columnVisibility = ref({
   createdAtUtc: false,
   updatedAtUtc: false,
 })
-const INITIAL_PAGE_INDEX = 0
-const goToPageNumber = ref(INITIAL_PAGE_INDEX + 1)
-const pageSizes = [1, 2, 3, 5, 10, 20, 30, 40, 50]
 
 const columns = [
-  columnHelper.accessor('id', {
-    header: () => 'Thought_Id',
-    cell: (info) => info.getValue(),
-  }),
-
-  columnHelper.group({
-    header: 'Author',
-    columns: [
-      columnHelper.accessor('user.id', {
-        header: () => 'User_Id',
-        cell: (info) => info.getValue(),
-      }),
-
-      columnHelper.accessor('user.username', {
-        header: () => 'Username',
-        cell: (info) => info.getValue(),
-      }),
-    ],
-  }),
-
-  columnHelper.group({
-    header: 'Content',
-    columns: [
-      columnHelper.accessor('title', {
-        cell: (info) => info.getValue(),
-      }),
-
-      columnHelper.accessor('content', {
-        cell: (info) => info.getValue(),
-      }),
-
-      columnHelper.accessor('isPublic', {
-        header: () => 'Visibility',
-        cell: (info) => (info.getValue() ? 'Public' : 'Private'),
-      }),
-    ],
-  }),
-
-  columnHelper.group({
-    header: 'Interactions',
-    columns: [
-      columnHelper.accessor('comments.count', {
-        cell: (info) => info.getValue(),
-        header: () => 'Comments',
-      }),
-
-      columnHelper.accessor('reactions', {
-        cell: (info) => info.getValue().reduce((acc, curr) => (acc += curr.count), 0),
-        header: () => 'Reactions',
-      }),
-    ],
-  }),
-
-  columnHelper.group({
-    header: 'Timestamps',
-    columns: [
-      columnHelper.accessor('createdAtUtc', {
-        header: () => 'Created',
-        cell: (info) => format(info.getValue() + 'Z', 'yyyy.MM.dd (HH:mm:ss)'),
-      }),
-
-      columnHelper.accessor('updatedAtUtc', {
-        header: () => 'Updated',
-        cell: (info) =>
-          new Date(info.getValue()).getUTCFullYear() > 1
-            ? format(info.getValue() + 'Z', 'yyyy.MM.dd (HH:mm:ss)')
-            : 'Never',
-      }),
-    ],
-  }),
-
+  ...getManageThoughtColumns(),
   columnHelper.display({
     id: 'actions',
     header: () => 'Actions',
@@ -165,16 +92,6 @@ function toggleColumnVisibility(column) {
   }
 }
 
-function handleGoToPage(e) {
-  const page = e.target.value ? Number(e.target.value) - 1 : 0
-  goToPageNumber.value = page + 1
-  table.setPageIndex(page)
-}
-
-function handlePageSizeChange(e) {
-  table.setPageSize(Number(e.target.value))
-}
-
 async function toggleVisibility(id, visibility) {
   try {
     await adminThoughts.updateThought(id, visibility)
@@ -208,30 +125,7 @@ function showComments(id) {
 
     <div class="col-12 d-flex justify-content-between align-items-center">
       <!-- Column visibility -->
-      <div class="dropdown">
-        <button
-          type="button"
-          class="btn btn-primary dropdown-toggle"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-          data-bs-auto-close="outside"
-        >
-          Select columns
-        </button>
-
-        <div class="dropdown-menu p-4">
-          <div v-for="column in table.getAllLeafColumns()" :key="column.id">
-            <label>
-              <input
-                type="checkbox"
-                :checked="column.getIsVisible()"
-                @input="toggleColumnVisibility(column)"
-              />
-              {{ column.id }}
-            </label>
-          </div>
-        </div>
-      </div>
+      <TableColumnVisibility :table="table" @toggle-column-visibility="toggleColumnVisibility" />
 
       <!-- Search -->
       <div class="d-flex justify-content-between">
@@ -274,76 +168,7 @@ function showComments(id) {
     </div>
 
     <!-- Pagination -->
-    <div class="col-12 d-flex align-items-center justify-content-between">
-      <div class="flex-grow-1" style="flex-basis: 0"></div>
-
-      <div
-        class="page-arrow-navigation d-flex align-items-center justify-content-center flex-grow-1"
-        style="flex-basis: 0"
-      >
-        <div class="page-info">
-          <div class="text-center mb-3">
-            <span>
-              <div>Page</div>
-              <strong>
-                {{ table.getState().pagination.pageIndex + 1 }} of
-                {{ table.getPageCount() }}
-              </strong>
-            </span>
-          </div>
-          <div class="buttons d-flex gap-1">
-            <button
-              class="border rounded p-1"
-              @click="() => table.setPageIndex(0)"
-              :disabled="!table.getCanPreviousPage()"
-            >
-              <i class="fa-solid fa-angles-left"></i>
-            </button>
-            <button
-              class="border rounded p-1"
-              @click="() => table.previousPage()"
-              :disabled="!table.getCanPreviousPage()"
-            >
-              <i class="fa-solid fa-angle-left"></i>
-            </button>
-            <button
-              class="border rounded p-1"
-              @click="() => table.nextPage()"
-              :disabled="!table.getCanNextPage()"
-            >
-              <i class="fa-solid fa-angle-right"></i>
-            </button>
-            <button
-              class="border rounded p-1"
-              @click="() => table.setPageIndex(table.getPageCount() - 1)"
-              :disabled="!table.getCanNextPage()"
-            >
-              <i class="fa-solid fa-angles-right"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="page-size-selector d-flex align-items-center justify-content-end gap-1 flex-grow-1"
-        style="flex-basis: 0"
-      >
-        <span class="d-flex align-items-center gap-1">
-          Go to page:
-          <input
-            type="number"
-            :value="goToPageNumber"
-            @change="handleGoToPage"
-            class="border p-1 rounded w-16"
-          />
-        </span>
-        <select :value="table.getState().pagination.pageSize" @change="handlePageSizeChange">
-          <option :key="pageSize" :value="pageSize" v-for="pageSize in pageSizes">
-            Show {{ pageSize }}
-          </option>
-        </select>
-      </div>
-    </div>
+    <TablePagination :table="table" />
   </div>
 </template>
 
